@@ -1,0 +1,66 @@
+﻿@page
+@model TomodaTibia.Views.Home.IndexModel
+@{
+
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/meuCss.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+
+<body>
+
+
+    @await Html.PartialAsync("~/Shared/_header.cshtml")
+
+
+    <div id="body" class="flex-container">
+
+
+        <form id="pesquisar">
+            <row>
+                <p class="font-weight-bold">Pesquisar Hunts</p>
+            </row>
+
+
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Character Name" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button">Pesquisar</button>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="customRadioInline1" name="customRadioInline1" class="custom-control-input">
+                    <label class="custom-control-label" for="customRadioInline1">Free Account </label>
+                </div>
+
+
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input">
+                    <label class="custom-control-label" for="customRadioInline2">Premium Account</label>
+                </div>
+
+            </div>
+
+
+        </form>
+    </div>
+
+    @await Html.PartialAsync("~/Shared/_footer.cshtml")
+
+    @await Html.PartialAsync("~/Shared/_scripts.cshtml")
+
+
+
+
+</body>
+
+
+</html>
