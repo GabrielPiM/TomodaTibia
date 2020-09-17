@@ -10,9 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TomodaTibiaAPI.DB;
+using TomodaTibiaAPI;
 using TomodaTibiaAPI.Services;
-
+using Swashbuckle.AspNetCore.Swagger;
+using TomodaTibiaAPI.DBContext;
 
 namespace TomodaTibia
 {
@@ -24,26 +25,32 @@ namespace TomodaTibia
         {
             Configuration = configuration;
         }
+     
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+           
 
             services.AddHttpClient<TibiaApiService>((httpClient) =>
             {
                 httpClient.BaseAddress = new Uri(Configuration["TibiaAPI"]);
             });
 
+            string con = Configuration.GetConnectionString("DBContext");
+
+            services.AddDbContext<TomodaTibiaContext>(options=> options.UseSqlServer(con));
+
+            services.AddScoped<HuntDataService>();
+            services.AddScoped<JsonReturn>();
 
             services.AddHttpClient();
             services.AddControllers();
             services.AddMvc(option => option.EnableEndpointRouting = false);
-            services.AddRazorPages();
-            services.AddMvc().AddRazorRuntimeCompilation();
 
-            string con = Configuration.GetConnectionString("TTC");
-            services.AddDbContext<TomodaTibiaContext>(options =>
-        options.UseSqlServer(con));
+            services.AddSwaggerGen();
+       
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,14 +61,21 @@ namespace TomodaTibia
                 app.UseDeveloperExceptionPage();
             }
 
-          
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
 
+            });
+       
             app.UseMvc(routes =>
             {
-                routes.MapRoute("default", "{controller=Api}/{action=Index}/{id?}");
+                routes.MapRoute("default", "{controller=hunt}/{action=Index}");
             });
 
-        
+         
+
+
         }
     }
 }

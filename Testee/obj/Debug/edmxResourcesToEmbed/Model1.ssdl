@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TomodaTibiaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="local">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" Nullable="false" />
+    <Property Name="nome" Type="varchar" MaxLength="100" />
+    <Property Name="nivelRec" Type="int" />
+    <Property Name="urlGif" Type="varchar" MaxLength="2048" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6013: The table/view 'TomodaTibia.dbo.localRec' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="localRec">
+          <Property Name="idRec" Type="int" />
+          <Property Name="idPlayer" Type="int" />
+        </EntityType>-->
+  <EntityType Name="player">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" Nullable="false" />
+    <Property Name="nome" Type="varchar" MaxLength="100" />
+    <Property Name="urlLive" Type="varchar" MaxLength="2048" />
+    <Property Name="urlMainChar" Type="varchar" MaxLength="2048" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+    <Property Name="principal_id" Type="int" Nullable="false" />
+    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="version" Type="int" />
+    <Property Name="definition" Type="varbinary(max)" />
+  </EntityType>
+  <EntityType Name="vocacoes">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" Nullable="false" />
+    <Property Name="druid" Type="bit" />
+    <Property Name="paladin" Type="bit" />
+    <Property Name="knight" Type="bit" />
+    <Property Name="sorcerer" Type="bit" />
+  </EntityType>
+  <!--Errors Found During Generation:
+error 6004: The table 'TomodaTibia.dbo.localRec' is referenced by a relationship, but cannot be found.
+        <Association Name="FK__localRec__idPlay__3E52440B" />-->
+  <!--Errors Found During Generation:
+error 6004: The table 'TomodaTibia.dbo.localRec' is referenced by a relationship, but cannot be found.
+        <Association Name="FK__localRec__idRec__3D5E1FD2" />-->
+  <Association Name="FK__vocacoes__id__440B1D61">
+    <End Role="local" Type="Self.local" Multiplicity="1" />
+    <End Role="vocacoes" Type="Self.vocacoes" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="local">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="vocacoes">
+        <PropertyRef Name="id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="TomodaTibiaModelStoreContainer">
+    <EntitySet Name="local" EntityType="Self.local" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="player" EntityType="Self.player" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="vocacoes" EntityType="Self.vocacoes" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK__vocacoes__id__440B1D61" Association="Self.FK__vocacoes__id__440B1D61">
+      <End Role="local" EntitySet="local" />
+      <End Role="vocacoes" EntitySet="vocacoes" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

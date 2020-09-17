@@ -1,0 +1,8 @@
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\bin\Debug\netstandard2.0\TomodaTibiaViewModels.deps.json
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\bin\Debug\netstandard2.0\TomodaTibiaViewModels.dll
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\bin\Debug\netstandard2.0\TomodaTibiaViewModels.pdb
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\obj\Debug\netstandard2.0\TomodaTibiaViewModels.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\obj\Debug\netstandard2.0\TomodaTibiaViewModels.AssemblyInfo.cs
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\obj\Debug\netstandard2.0\TomodaTibiaViewModels.csproj.CoreCompileInputs.cache
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\obj\Debug\netstandard2.0\TomodaTibiaViewModels.dll
+C:\Users\gabri\source\repos\TomodaTibia\TomodaTibiaViewModel\obj\Debug\netstandard2.0\TomodaTibiaViewModels.pdb

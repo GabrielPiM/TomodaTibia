@@ -11,28 +11,30 @@ using Microsoft.Extensions.Configuration;
 namespace TomodaTibiaAPI.Services
 {
 
-    public interface ITApiservice
+    public interface ITApiService
     {
-
-        dynamic getNivel(string _nome);
+        Task<dynamic> getCharInfo(string _nome);
     }
 
-    public class TibiaApiService : ITApiservice
+    public class TibiaApiService : ITApiService
     {
         private readonly HttpClient _client;
- 
+
 
         public TibiaApiService(HttpClient httpClient)
         {
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json; charset=utf-8");
             httpClient.DefaultRequestHeaders.Add("User-Agent", "TomodaTibia");
+
             _client = httpClient;
         }
-        public dynamic getNivel(string _nome)
-        {
-            var res = _client.GetAsync( _nome + ".json").Result;
+
+        public async Task<dynamic> getCharInfo(string _nome)
+        {           
+            _nome += ".json";
+            var res = await _client.GetAsync(_nome).ConfigureAwait(false);
             res.EnsureSuccessStatusCode();
-            string stringData = res.Content.ReadAsStringAsync().Result;
+            string stringData = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject(stringData);
 
             return data;
@@ -42,18 +44,5 @@ namespace TomodaTibiaAPI.Services
 
     }
 
-
-    //public async Task<string> getNivel2(String _nome)
-    //{
-    //    var response = await Client.GetAsync($"{_nome}.json");
-
-    //    response.EnsureSuccessStatusCode();
-
-    //    using var responseStream = await response.Content.ReadAsStreamAsync();
-    //    JObject nivel = JObject.Parse(response.ToString());
-
-    //    return nivel["level"].ToString();
-
-    //}
 }
 

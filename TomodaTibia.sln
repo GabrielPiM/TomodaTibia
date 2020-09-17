@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TomodaTibiaAPI", "TomodaTibia\TomodaTibiaAPI.csproj", "{D6AC21EA-46C2-4719-B6FB-AFC72418EF9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomodaTibiaFront", "TomodaTibiaFront\TomodaTibiaFront.csproj", "{0A9D7E5E-21CA-452F-B8E6-0469A49A4C99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TomodaTibiaModels", "TomodaTibiaModels\TomodaTibiaModels.csproj", "{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{D6AC21EA-46C2-4719-B6FB-AFC72418EF9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6AC21EA-46C2-4719-B6FB-AFC72418EF9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6AC21EA-46C2-4719-B6FB-AFC72418EF9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A9D7E5E-21CA-452F-B8E6-0469A49A4C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A9D7E5E-21CA-452F-B8E6-0469A49A4C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A9D7E5E-21CA-452F-B8E6-0469A49A4C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A9D7E5E-21CA-452F-B8E6-0469A49A4C99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
