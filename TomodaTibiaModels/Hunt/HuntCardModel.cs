@@ -7,12 +7,11 @@ namespace TomodaTibiaModels.Hunt
 {
     public class HuntCardModel
     {
-        public int id { get; set; }
-        public string nome { get; set; }
-        public int? nivelMinRec { get; set; }
-        public IEnumerable<string> urlGif { get; set; }
-        public Autor autor { get; set; }
-   
+        public int Id { get; set; }
+        public string Nome { get; set; }
+        public int? NivelMinRec { get; set; }
+        public IEnumerable<string> URLGif { get; set; }
+        public int Difficulty { get; set; }
 
     }
 }

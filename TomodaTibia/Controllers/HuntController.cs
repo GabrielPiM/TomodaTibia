@@ -9,13 +9,14 @@ using TomodaTibiaAPI.Services;
 using System.Net.Http;
 using TomodaTibiaModels.Hunt;
 using TomodaTibiaModels.DB;
-using TomodaTibiaAPI.DBContext;
+
 using TomodaTibiaModels.Pesquisa;
 using TomodaTibiaModels.Character;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using EFDataAcessLibrary.Models;
 
 namespace TomodaTibiaAPI.Controllers
 {
@@ -61,11 +62,12 @@ namespace TomodaTibiaAPI.Controllers
         [HttpPost("add")]
         public async Task<ActionResult> Add(Hunt hunt)
         {
-            var isAdd = await dataService.add(hunt);
-            if (isAdd)
-                return CreatedAtAction("autor/index", "Hunt Adicionada.");
+            var result = await dataService.Add(hunt);
+            if (result != null)
+
+                return Ok(result);
             else
-                return jsReturn.NotFoundJson("Aconteceu algum erro... tente novamente.");
+                return NotFound();
         }
     }
 }

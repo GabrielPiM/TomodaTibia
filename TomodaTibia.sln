@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TomodaTibiaAPI", "TomodaTib
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TomodaTibiaModels", "TomodaTibiaModels\TomodaTibiaModels.csproj", "{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFDataAcessLibrary", "EFDataAcessLibrary\EFDataAcessLibrary.csproj", "{357F4329-01B7-4BC0-B8F6-785DA121FB3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1230197-6DA7-4B8E-B1D7-A7909E8D3F8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{357F4329-01B7-4BC0-B8F6-785DA121FB3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{357F4329-01B7-4BC0-B8F6-785DA121FB3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{357F4329-01B7-4BC0-B8F6-785DA121FB3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{357F4329-01B7-4BC0-B8F6-785DA121FB3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

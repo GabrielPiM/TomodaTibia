@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TomodaTibiaAPI;
 using TomodaTibiaAPI.Services;
 using Swashbuckle.AspNetCore.Swagger;
-using TomodaTibiaAPI.DBContext;
+using EFDataAcessLibrary.Models;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace TomodaTibia
 {
@@ -39,17 +40,24 @@ namespace TomodaTibia
 
             string con = Configuration.GetConnectionString("DBContext");
 
-            services.AddDbContext<TomodaTibiaContext>(options=> options.UseSqlServer(con));
+            services.AddDbContext<TomodaTibiaContext>(options => options.UseSqlServer(con));
 
             services.AddScoped<HuntDataService>();
+            services.AddScoped<AuthorDataService>();
             services.AddScoped<JsonReturn>();
 
             services.AddHttpClient();
             services.AddControllers();
             services.AddMvc(option => option.EnableEndpointRouting = false);
+            services.AddMvc().AddNewtonsoftJson(o =>
+            {
+                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
 
             services.AddSwaggerGen();
-       
+
+      
+
 
         }
 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gabri\\source\\repos\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {}
+    "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gabri\\source\\repos\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {
+    "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gabri\\source\\repos\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
+        "projectUniqueName": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
         "projectName": "TomodaTibiaModels",
-        "projectPath": "C:\\Users\\gabri\\source\\repos\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
+        "projectPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
         "packagesPath": "C:\\Users\\gabri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gabri\\source\\repos\\TomodaTibia\\TomodaTibiaModels\\obj\\",
+        "outputPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\gabri\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -26,6 +26,7 @@
         },
         "frameworks": {
           "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
             "projectReferences": {}
           }
         },
@@ -37,6 +38,7 @@
       },
       "frameworks": {
         "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
           "dependencies": {
             "Microsoft.CSharp": {
               "target": "Package",
@@ -63,7 +65,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     }
