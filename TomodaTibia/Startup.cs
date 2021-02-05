@@ -20,18 +20,18 @@ namespace TomodaTibia
 {
     public class Startup
     {
-        
+
         public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-     
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-           
+
 
             services.AddHttpClient<TibiaApiService>((httpClient) =>
             {
@@ -44,7 +44,8 @@ namespace TomodaTibia
 
             services.AddScoped<HuntDataService>();
             services.AddScoped<AuthorDataService>();
-            services.AddScoped<JsonReturn>();
+            services.AddScoped<AuthenticationDataService>();
+
 
             services.AddHttpClient();
             services.AddControllers();
@@ -56,8 +57,11 @@ namespace TomodaTibia
 
             services.AddSwaggerGen();
 
-      
-
+            services.AddAuthentication("TomodaTibiaAPI")
+                .AddCookie("TomodaTibiaAPI", options =>
+                {
+                    options.Cookie.Name = "CookieTomodaTibia";
+                });
 
         }
 
@@ -75,13 +79,17 @@ namespace TomodaTibia
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
 
             });
-       
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute("default", "{controller=hunt}/{action=Index}");
-            });
 
-         
+            app.UseHttpsRedirection();
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(options =>
+            {
+                options.MapDefaultControllerRoute();
+            });
 
 
         }

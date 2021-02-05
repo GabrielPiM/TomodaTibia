@@ -8771,11 +8771,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibia\\TomodaTibiaAPI.csproj",
+      "projectUniqueName": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibia\\TomodaTibiaAPI.csproj",
       "projectName": "TomodaTibiaAPI",
-      "projectPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibia\\TomodaTibiaAPI.csproj",
+      "projectPath": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibia\\TomodaTibiaAPI.csproj",
       "packagesPath": "C:\\Users\\gabri\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibia\\obj\\",
+      "outputPath": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibia\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\gabri\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -8792,11 +8792,11 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\EFDataAcessLibrary\\EFDataAcessLibrary.csproj": {
-              "projectPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\EFDataAcessLibrary\\EFDataAcessLibrary.csproj"
+            "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\EFDataAcessLibrary\\EFDataAcessLibrary.csproj": {
+              "projectPath": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\EFDataAcessLibrary\\EFDataAcessLibrary.csproj"
             },
-            "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {
-              "projectPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj"
+            "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {
+              "projectPath": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj"
             }
           }
         }

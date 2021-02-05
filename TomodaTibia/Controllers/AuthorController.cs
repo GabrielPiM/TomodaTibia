@@ -9,21 +9,18 @@ using TomodaTibiaAPI.Services;
 
 namespace TomodaTibiaAPI.Controllers
 {
-    [Route("author/")]
-    [ApiController]
-    public class AuthorController : ControllerBase
+    public class AuthorController : Controller
     {
 
         private AuthorDataService DataService;
-        private JsonReturn JsReturn;
-
-        public AuthorController(AuthorDataService dataService, JsonReturn jsReturn)
+   
+        public AuthorController(AuthorDataService dataService)
         {
             DataService = dataService;
-            JsReturn = jsReturn;
+       
         }
 
-        [HttpPost("add")]
+        [HttpPost("addAuthor")]
         public async Task<ActionResult> Add(Author author)
         {
             var result = await DataService.Add(author);

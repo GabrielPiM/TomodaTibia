@@ -11,12 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("TomodaTibiaAPI")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("EFDataAcessLibrary")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-[assembly: System.Reflection.AssemblyProductAttribute("TomodaTibiaAPI")]
-[assembly: System.Reflection.AssemblyTitleAttribute("TomodaTibiaAPI")]
+[assembly: System.Reflection.AssemblyProductAttribute("EFDataAcessLibrary")]
+[assembly: System.Reflection.AssemblyTitleAttribute("EFDataAcessLibrary")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Gerado pela classe WriteCodeFragment do MSBuild.

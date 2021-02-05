@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {}
+    "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {
+    "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
+        "projectUniqueName": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
         "projectName": "TomodaTibiaModels",
-        "projectPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
+        "projectPath": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
         "packagesPath": "C:\\Users\\gabri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\obj\\",
+        "outputPath": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\gabri\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -17,20 +17,22 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using EFDataAcessLibrary.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TomodaTibiaAPI.Controllers
 {
-    [Route("hunt/")]
-    [ApiController]
-    public class HuntController : ControllerBase
+
+
+    public class HuntController : Controller
     {
 
         private readonly HuntDataService dataService;
-        private readonly JsonReturn jsReturn;
-        public HuntController(HuntDataService dataServ, JsonReturn jsonReturn)
+
+        public HuntController(HuntDataService dataServ)
         {
             dataService = dataServ;
-            jsReturn = jsonReturn;
+
         }
 
         [HttpGet("{charName}")]
@@ -41,9 +43,9 @@ namespace TomodaTibiaAPI.Controllers
 
             //Retorna informações do personagem e as hunts (cards) recomendadas se encontrar.
             if (result != null)
-                return jsReturn.OkJson(result);
+                return Ok(result);
             else
-                return jsReturn.NotFoundJson("Personagem não encontrado.");
+                return NotFound("Personagem não encontrado.");
         }
 
         [HttpGet("{id}")]
@@ -54,17 +56,22 @@ namespace TomodaTibiaAPI.Controllers
 
             //Retorna os detalhes se encontrar.
             if (result != null)
-                return jsReturn.OkJson(result);
+                return Ok(result);
             else
-                return jsReturn.NotFoundJson("Hunt não encontrada");
+                return NotFound("Hunt não encontrada.");
         }
 
-        [HttpPost("add")]
+        [Authorize]
+        [HttpPost("addHunt")]
         public async Task<ActionResult> Add(Hunt hunt)
         {
-            var result = await dataService.Add(hunt);
-            if (result != null)
+            hunt.IdAuthor = int.Parse(User.Claims
+                .Where(x => x.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault().ToString());
 
+            var result = await dataService.Add(hunt);
+
+            if (result != null)
                 return Ok(result);
             else
                 return NotFound();
