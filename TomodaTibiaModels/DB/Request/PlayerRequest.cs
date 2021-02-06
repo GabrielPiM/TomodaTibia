@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 
 
-namespace TomodaTibiaModels.DB
+namespace TomodaTibiaModels.DB.Request
 {
-    public partial class PlayerDTO
+    public partial class PlayerRequest
     {
-        public PlayerDTO()
+        public PlayerRequest()
         {
     
         }
@@ -16,6 +16,6 @@ namespace TomodaTibiaModels.DB
         public int Vocation { get; set; }
         public int Level { get; set; }
  
-        public virtual EquipamentDTO Equipaments { get; set; }
+        public virtual EquipamentRequest Equipaments { get; set; }
     }
 }

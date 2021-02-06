@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1bNoWFXzeU/bi+XG4n7l4rrJCXXDhCr8qqKxToy9DVt1eq7PNJHd1vGcZdrgwOsuBzVxfZAZy6ig/y3bdzJ/tQ==",
+  "dgSpecHash": "iiDpD+HQ32cOY/xFr9T3+BJo/tEjYlx4w+6lGNoExhzu0A0s8bGraMTM4Iv/yXcTrJHsiGmUPh1Uvfd4QdAtgA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\gabri\\Source\\Repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
+  "projectFilePath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\gabri\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\gabri\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",

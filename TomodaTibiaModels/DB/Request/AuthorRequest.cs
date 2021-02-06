@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 
 
-namespace TomodaTibiaModels.DB
+namespace TomodaTibiaModels.DB.Request
 {
-    public partial class AuthorDTO
+    public partial class AuthorRequest
     {
-        public AuthorDTO()
+        public AuthorRequest()
         {
-            Hunts = new HashSet<HuntDTO>();
+            Hunts = new HashSet<HuntRequest>();
         }
 
         public int Id { get; set; }
@@ -19,6 +19,6 @@ namespace TomodaTibiaModels.DB
         public string UrlSocial { get; set; }
         public string NameMainChar { get; set; }
 
-        public virtual ICollection<HuntDTO> Hunts { get; set; }
+        public virtual ICollection<HuntRequest> Hunts { get; set; }
     }
 }

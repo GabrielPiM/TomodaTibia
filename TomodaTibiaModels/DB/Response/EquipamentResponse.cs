@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 
 
-namespace TomodaTibiaModels.DB
+namespace TomodaTibiaModels.DB.Response
 {
-    public partial class EquipamentDTO
+    public partial class EquipamentResponse
     {
 
         public string Amulet { get; set; }

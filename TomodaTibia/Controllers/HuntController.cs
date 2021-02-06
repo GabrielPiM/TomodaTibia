@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using TomodaTibiaAPI.Services;
 using System.Net.Http;
 using TomodaTibiaModels.Hunt;
-using TomodaTibiaModels.DB;
+using TomodaTibiaModels.DB.Request;
 
 using TomodaTibiaModels.Pesquisa;
 using TomodaTibiaModels.Character;
@@ -33,6 +33,49 @@ namespace TomodaTibiaAPI.Controllers
         {
             dataService = dataServ;
 
+        }
+
+        [HttpGet("huntJson")]
+        public ActionResult GetHuntJson()
+        {
+            var hunt = new Hunt();
+
+            hunt.HuntClientVersions.Add(new HuntClientVersion()
+            {              
+               IdClientVersion=1,  
+            });
+
+            hunt.HuntImbuements.Add(new HuntImbuement()
+            {
+                IdImbuement=0,
+                IdImbuementLevel=0,
+                IdImbuementType=0,
+                Qty=0
+            });
+
+            hunt.HuntItems.Add(new HuntItem()
+            {
+                IdItem=0,
+                Qty=0
+            });
+
+            hunt.HuntPreys.Add(new HuntPrey()
+            {
+                IdPrey=0,
+                IdMonster=0,
+                ReccStar=0
+            });
+
+            hunt.Players.Add(new Player()
+            {
+                Vocation = 1,
+                Level = 0,
+                Equipaments = new List<Equipament>() {new Equipament { } }
+
+            });   
+
+
+            return Ok(hunt);
         }
 
         [HttpGet("{charName}")]
@@ -65,6 +108,7 @@ namespace TomodaTibiaAPI.Controllers
         [HttpPost("addHunt")]
         public async Task<ActionResult> Add(Hunt hunt)
         {
+
             hunt.IdAuthor = int.Parse(User.Claims
                 .Where(x => x.Type == ClaimTypes.NameIdentifier)
                 .FirstOrDefault().ToString());

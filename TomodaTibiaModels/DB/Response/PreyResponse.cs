@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using TomodaTibiaModels.Utils;
 
-namespace TomodaTibiaModels.DB
+namespace TomodaTibiaModels.DB.Response
 {
-    public partial class PreyDTO
+    public partial class PreyResponse
     {
         public string Img { get; set; }
         public int ReccStars { get; set; }
         public string Type { get { return Formatting.ExtractName(Img); } }
-        public MonsterDTO Monster { get; set; }
+        public MonsterResponse Monster { get; set; }
 
     }
 }

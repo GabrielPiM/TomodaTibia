@@ -13,7 +13,7 @@ namespace EFDataAcessLibrary.Models
             HuntImbuements = new HashSet<HuntImbuement>();
             HuntItems = new HashSet<HuntItem>();
             HuntPreys = new HashSet<HuntPrey>();
-            Players = new HashSet<Player>();
+            Players = new HashSet<Player>();           
         }
 
         public int Id { get; set; }

@@ -45,11 +45,9 @@ namespace TomodaTibia
             services.AddScoped<HuntDataService>();
             services.AddScoped<AuthorDataService>();
             services.AddScoped<AuthenticationDataService>();
-
-
+                   
             services.AddHttpClient();
-            services.AddControllers();
-            services.AddMvc(option => option.EnableEndpointRouting = false);
+
             services.AddMvc().AddNewtonsoftJson(o =>
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -62,6 +60,7 @@ namespace TomodaTibia
                 {
                     options.Cookie.Name = "CookieTomodaTibia";
                 });
+
 
         }
 

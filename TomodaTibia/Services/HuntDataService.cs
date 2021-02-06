@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
-using TomodaTibiaModels.DB;
+using TomodaTibiaModels.DB.Response;
 using Microsoft.EntityFrameworkCore;
 using TomodaTibiaModels.Hunt;
 using EFDataAcessLibrary.Models;
 using TomodaTibiaModels.Character;
+
 
 namespace TomodaTibiaAPI.Services
 {
@@ -17,7 +17,7 @@ namespace TomodaTibiaAPI.Services
 
         //Task<PaginatedList<ToDo>> GetList(int? pageNumber, string sortField, string sortOrder);
         Task<dynamic> Get(string charName);
-        Task<HuntDTO> GetDetail(int HuntId);
+        Task<HuntResponse> GetDetail(int HuntId);
         Task<Hunt> Add(Hunt hunt);
         Task<Hunt> Update(Hunt hunt);
         Task<Hunt> Delete(int id);
@@ -85,12 +85,12 @@ namespace TomodaTibiaAPI.Services
 
         }
 
-        public async Task<HuntDTO> GetDetail(int HuntId)
+        public async Task<HuntResponse> GetDetail(int HuntId)
         {
             //Consulta informacoes da Hunt 
             var hunt = await db.Hunts
                 .Where(h => h.Id == HuntId)
-                .Select(h => new HuntDTO
+                .Select(h => new HuntResponse
                 {
                     Name = h.Name,
                     NivelMinReq = h.NivelMinReq,
@@ -108,12 +108,12 @@ namespace TomodaTibiaAPI.Services
             if (hunt == null) return null;
 
             hunt.Players = await db.Players.Where(p => p.IdHunt == HuntId)
-                .Select(p => new PlayerDTO
+                .Select(p => new PlayerResponse
                 {
                     Vocation = p.Vocation,
                     Level = p.Level,
                     Equipaments = db.Equipaments.Where(e => e.Id == p.Id)
-                    .Select(e => new EquipamentDTO
+                    .Select(e => new EquipamentResponse
                     {
                         Amulet = e.Amulet,
                         Bag = e.Bag,
@@ -133,7 +133,7 @@ namespace TomodaTibiaAPI.Services
             //Consulta outros Items da hunt
             hunt.OtherItems = await db.HuntItems
                 .Where(i => i.IdHunt == HuntId)
-                .Select(i => new ItemDTO
+                .Select(i => new ItemResponse
                 {
                     Img = i.IdItemNavigation.Img,
                     Qty = i.Qty
@@ -142,11 +142,11 @@ namespace TomodaTibiaAPI.Services
 
             //Preys desta hunt.
             hunt.Preys = db.HuntPreys.Where(h => h.IdHunt == HuntId)
-                .Select(p => new PreyDTO
+                .Select(p => new PreyResponse
                 {
                     Img = p.IdMonsterNavigation.Img,
                     ReccStars = p.ReccStar,
-                    Monster = new MonsterDTO
+                    Monster = new MonsterResponse
                     {
                         Img = p.IdMonsterNavigation.Img
                     }
@@ -154,7 +154,7 @@ namespace TomodaTibiaAPI.Services
 
             //Imbuements desta hunt.
             hunt.Imbuements = db.HuntImbuements.Where(hi => hi.IdHunt == HuntId)
-                .Select(h => new ImbuementDTO
+                .Select(h => new ImbuementResponse
                 {
                     Category = h.IdImbuementNavigation.Category,
 
@@ -172,7 +172,7 @@ namespace TomodaTibiaAPI.Services
                     Items = db.ImbuementItems
                     .Where(i => i.IdImbuement == h.IdImbuementNavigation.Id
                       && i.IdImbuementLevel <= h.IdImbuementLevel)
-                    .Select(it => new ItemDTO
+                    .Select(it => new ItemResponse
                     {
                         Img = it.IdItemNavigation.Img,
                         Qty = it.Qty

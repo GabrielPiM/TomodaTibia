@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using TomodaTibiaModels.Utils;
 
-namespace TomodaTibiaModels.DB
+namespace TomodaTibiaModels.DB.Response
 {
-    public partial class ItemDTO
+    public partial class ItemResponse
     {
         public string Img { get; set; }
         public int? Qty { get; set; }

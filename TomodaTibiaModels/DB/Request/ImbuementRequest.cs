@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 
 
-namespace TomodaTibiaModels.DB
+namespace TomodaTibiaModels.DB.Request
 {
-    public partial class ImbuementDTO
+    public partial class ImbuementRequest
     {
 
-        public ImbuementDTO()
+        public ImbuementRequest()
         {
-            Items = new List<ItemDTO>();
+            Items = new List<ItemRequest>();
         }
 
         public int Id { get; set; }
@@ -22,6 +22,6 @@ namespace TomodaTibiaModels.DB
         public string Img { get; set; }
 
 
-        public List<ItemDTO> Items { get; set; }
+        public List<ItemRequest> Items { get; set; }
     }
 }

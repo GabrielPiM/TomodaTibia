@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
  
 
-namespace TomodaTibiaModels.DB
+namespace TomodaTibiaModels.DB.Response
 {
-    public partial class HuntPreyDTO
+    public partial class HuntPreyResponse
     {
         public int Id { get; set; }
         public int? IdHunt { get; set; }
@@ -13,8 +13,6 @@ namespace TomodaTibiaModels.DB
         public int? IdMonster { get; set; }
         public int ReccStar { get; set; }
 
-        public virtual HuntDTO IdHuntNavigation { get; set; }
-        public virtual MonsterDTO IdMonsterNavigation { get; set; }
-        public virtual PreyDTO IdPreyNavigation { get; set; }
+
     }
 }
