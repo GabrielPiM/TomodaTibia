@@ -7,11 +7,7 @@ using TomodaTibiaAPI;
 using Microsoft.AspNetCore.Http;
 using TomodaTibiaAPI.Services;
 using System.Net.Http;
-using TomodaTibiaModels.Hunt;
-using TomodaTibiaModels.DB.Request;
 
-using TomodaTibiaModels.Pesquisa;
-using TomodaTibiaModels.Character;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +15,8 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using EFDataAcessLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using TomodaTibiaModels.DB.Request;
+using TomodaTibiaAPI.Utils;
 
 namespace TomodaTibiaAPI.Controllers
 {
@@ -27,11 +25,11 @@ namespace TomodaTibiaAPI.Controllers
     public class HuntController : Controller
     {
 
-        private readonly HuntDataService dataService;
+        private readonly HuntDataService _dataService;
 
-        public HuntController(HuntDataService dataServ)
+        public HuntController(HuntDataService dataService)
         {
-            dataService = dataServ;
+            _dataService = dataService;
 
         }
 
@@ -41,84 +39,113 @@ namespace TomodaTibiaAPI.Controllers
             var hunt = new Hunt();
 
             hunt.HuntClientVersions.Add(new HuntClientVersion()
-            {              
-               IdClientVersion=1,  
+            {
+                IdClientVersion = 1,
             });
 
             hunt.HuntImbuements.Add(new HuntImbuement()
             {
-                IdImbuement=0,
-                IdImbuementLevel=0,
-                IdImbuementType=0,
-                Qty=0
+                IdImbuement = 0,
+                IdImbuementLevel = 0,
+                IdImbuementType = 0,
+                Qty = 0
             });
 
             hunt.HuntItems.Add(new HuntItem()
             {
-                IdItem=0,
-                Qty=0
+                IdItem = 0,
+                Qty = 0
             });
 
             hunt.HuntPreys.Add(new HuntPrey()
             {
-                IdPrey=0,
-                IdMonster=0,
-                ReccStar=0
+                IdPrey = 0,
+                IdMonster = 0,
+                ReccStar = 0
             });
 
             hunt.Players.Add(new Player()
             {
                 Vocation = 1,
                 Level = 0,
-                Equipaments = new List<Equipament>() {new Equipament { } }
+                Equipaments = new List<Equipament>() { new Equipament() { Id = 0 }, new Equipament() { Id = 0 } }
 
-            });   
+            });
 
 
-            return Ok(hunt);
+            var huntReq = new HuntRequest();
+            huntReq.HuntImbuements.Add(new HuntImbuementRequest());
+            huntReq.HuntItems.Add(new HuntItemRequest());
+            huntReq.Players.Add(new PlayerRequest());
+            huntReq.Players.First().Equipaments.Add(new EquipamentRequest());
+            huntReq.Players.First().Equipaments.Add(new EquipamentRequest());
+            huntReq.HuntPreys.Add(new HuntPreyRequest());
+            huntReq.HuntClientVersions.Add(new ClientVersionRequest());
+            return Ok(huntReq);
         }
 
-        [HttpGet("{charName}")]
-        public async Task<ActionResult> GetHunts(string charName)
+        //Consulta os dados do personagem e hunt.
+        [HttpGet("search/{charName}")]
+        public async Task<ActionResult> Hunts(string characterName)
         {
-            //consulta os dados do personagem e hunt.
-            var result = await dataService.Get(charName);
+            var response = await _dataService.Search(characterName);
 
             //Retorna informações do personagem e as hunts (cards) recomendadas se encontrar.
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound("Personagem não encontrado.");
+            return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetHuntDetail(int id)
+        //consulta os detalhes da hunt.
+        [HttpGet("{idHunt}")]
+        public async Task<ActionResult> HuntDetail([FromRoute]int idHunt)
         {
-            // //consulta os detalhes da hunt.
-            var result = await dataService.GetDetail(id);
+            var response = await _dataService.Detail(idHunt);
 
             //Retorna os detalhes se encontrar.
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound("Hunt não encontrada.");
+            return StatusCode(response.StatusCode, response);
         }
 
+        //Adiocina uma hunt.
         [Authorize]
-        [HttpPost("addHunt")]
-        public async Task<ActionResult> Add(Hunt hunt)
+        [HttpPost("hunt")]
+        public async Task<ActionResult> AddHunt([FromBody] HuntRequest hunt)
         {
 
             hunt.IdAuthor = int.Parse(User.Claims
-                .Where(x => x.Type == ClaimTypes.NameIdentifier)
-                .FirstOrDefault().ToString());
+                .FirstOrDefault(x => x.Type == "Id").Value
+                .ToString());
 
-            var result = await dataService.Add(hunt);
+            var response = await _dataService.Add(hunt);
 
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            return StatusCode(response.StatusCode, response);
         }
+
+        //Remove uma hunt.
+        [Authorize]
+        [HttpDelete("{idHunt}")]
+        public async Task<ActionResult> RemoveHunt(int idHunt)
+        {
+            var idAuthor = int.Parse(User.Claims
+                .FirstOrDefault(x => x.Type == "Id").Value
+                .ToString());
+
+            var response = await _dataService.Remove(idHunt, idAuthor);
+     
+            return StatusCode(response.StatusCode, response);
+        }
+
+        //Remove uma hunt.
+        [Authorize]
+        [HttpPut("hunt")]
+        public async Task<ActionResult> UpdateHunt([FromBody] HuntRequest hunt)
+        {
+            var idAuthor = int.Parse(User.Claims
+                .FirstOrDefault(x => x.Type == "Id").Value
+                .ToString());
+
+            var response = await _dataService.Update(hunt,idAuthor);
+
+            return StatusCode(response.StatusCode, response);
+        }
+
     }
 }

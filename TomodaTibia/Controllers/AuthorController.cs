@@ -6,31 +6,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TomodaTibiaAPI.Services;
+using TomodaTibiaModels.DB.Request;
 
 namespace TomodaTibiaAPI.Controllers
 {
     public class AuthorController : Controller
     {
 
-        private AuthorDataService DataService;
+        private AuthorDataService _dataService;
    
         public AuthorController(AuthorDataService dataService)
         {
-            DataService = dataService;
+            _dataService = dataService;
        
         }
 
-        [HttpPost("addAuthor")]
-        public async Task<ActionResult> Add(Author author)
+        [HttpPost("Author")]
+        public async Task<ActionResult> AddAuthor([FromBody]AuthorRequest author)
         {
-            var result = await DataService.Add(author);
-            Author newAuthor = (Author)result;
+            var response = await _dataService.Add(author);
 
-            if (newAuthor != null)
-                return Ok(newAuthor);
-            else
-                return NotFound();
+            return StatusCode(response.StatusCode, response);   
         }
-
     }
 }

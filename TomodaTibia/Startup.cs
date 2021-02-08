@@ -15,6 +15,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using EFDataAcessLibrary.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using AutoMapper;
+using TomodaTibiaAPI.Maps;
 
 namespace TomodaTibia
 {
@@ -31,16 +33,22 @@ namespace TomodaTibia
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
-
             services.AddHttpClient<TibiaApiService>((httpClient) =>
             {
                 httpClient.BaseAddress = new Uri(Configuration["TibiaAPI"]);
+            }); 
+
+            services.AddDbContext<TomodaTibiaContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("TomodaTibia"),
+                sqlServerOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 10,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null);
+                });
             });
-
-            string con = Configuration.GetConnectionString("DBContext");
-
-            services.AddDbContext<TomodaTibiaContext>(options => options.UseSqlServer(con));
 
             services.AddScoped<HuntDataService>();
             services.AddScoped<AuthorDataService>();
@@ -53,6 +61,7 @@ namespace TomodaTibia
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
+            services.AddAutoMapper(typeof(MapsProfiles));
             services.AddSwaggerGen();
 
             services.AddAuthentication("TomodaTibiaAPI")
@@ -60,8 +69,6 @@ namespace TomodaTibia
                 {
                     options.Cookie.Name = "CookieTomodaTibia";
                 });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +78,7 @@ namespace TomodaTibia
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -89,8 +96,6 @@ namespace TomodaTibia
             {
                 options.MapDefaultControllerRoute();
             });
-
-
         }
     }
 }

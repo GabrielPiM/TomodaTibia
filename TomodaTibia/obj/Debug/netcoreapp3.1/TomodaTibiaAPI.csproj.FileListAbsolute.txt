@@ -277,3 +277,5 @@ C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibia\obj\Debug\netcore
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibia\obj\Debug\netcoreapp3.1\TomodaTibiaAPI.dll
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibia\obj\Debug\netcoreapp3.1\TomodaTibiaAPI.pdb
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibia\obj\Debug\netcoreapp3.1\TomodaTibiaAPI.genruntimeconfig.cache
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibia\bin\Debug\netcoreapp3.1\AutoMapper.dll
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibia\bin\Debug\netcoreapp3.1\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

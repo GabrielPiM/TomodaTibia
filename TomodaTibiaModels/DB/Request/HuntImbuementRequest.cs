@@ -8,9 +8,9 @@ namespace TomodaTibiaModels.DB.Request
     public partial class HuntImbuementRequest
     {
  
-        public int? IdImbuement { get; set; }
-        public int? IdImbuementLevel { get; set; }
-        public int? IdImbuementType { get; set; }
+        public int IdImbuement { get; set; }
+        public int IdImbuementLevel { get; set; }
+        public int IdImbuementType { get; set; }
         public int Qty { get; set; }
 
 

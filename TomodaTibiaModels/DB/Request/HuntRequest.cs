@@ -7,16 +7,19 @@ namespace TomodaTibiaModels.DB.Request
 {
     public partial class HuntRequest
     {
+
+
         public HuntRequest()
         {
-            Versions = new List<String>();
-            Imbuements = new List<ImbuementRequest>();
-            OtherItems = new List<ItemRequest>();
-            Preys = new List<PreyRequest>();
+            HuntImbuements = new List<HuntImbuementRequest>();
+            HuntItems = new List<HuntItemRequest>();
+            HuntPreys = new List<HuntPreyRequest>();
             Players = new List<PlayerRequest>();
+            HuntClientVersions = new List<ClientVersionRequest>();
         }
 
  
+        public int IdAuthor { get; set; }
         public string Name { get; set; }
         public int NivelMinReq { get; set; }
         public int XpHr { get; set; }
@@ -29,12 +32,15 @@ namespace TomodaTibiaModels.DB.Request
         public bool? IsPremium { get; set; }
 
 
-        public List<int> ClientVersions{ get; set; }
-        public List<HuntImbuementRequest> Imbuements { get; set; }
-        public List<PlayerRequest> Players { get; set; }
-        public List<ItemRequest> OtherItems { get; set; }
-        public List<PreyRequest> Preys { get; set; }
-         
-        public List<String> Versions { get; set; }
+        public List<ClientVersionRequest> HuntClientVersions { get; set; }      
+        public List<HuntImbuementRequest> HuntImbuements { get; set; }
+        public List<HuntItemRequest> HuntItems { get; set; }
+        public List<HuntPreyRequest> HuntPreys { get; set; }
+        public List<HuntMonsterRequest> HuntMonsters { get; set; }
+        public List<PlayerRequest> Players { get; set; } 
+      
+        
+
+
     }
 }

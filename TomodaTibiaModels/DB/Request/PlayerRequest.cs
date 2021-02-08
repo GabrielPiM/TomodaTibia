@@ -9,13 +9,13 @@ namespace TomodaTibiaModels.DB.Request
     {
         public PlayerRequest()
         {
-    
+            Equipaments = new List<EquipamentRequest>();
         }
 
 
         public int Vocation { get; set; }
         public int Level { get; set; }
  
-        public virtual EquipamentRequest Equipaments { get; set; }
+        public List<EquipamentRequest> Equipaments { get; set; }
     }
 }

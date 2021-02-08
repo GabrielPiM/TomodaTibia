@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.CSharp.RuntimeBinder;
 
-namespace TomodaTibiaModels.Character
+namespace TomodaTibiaModels.Character.Response
 {
-    public class CharacterModel
+    public class CharacterResponse
     {
-        public CharacterModel(dynamic nome, dynamic level, dynamic vocacao, dynamic sexo, dynamic isPremium)
+        public CharacterResponse(dynamic nome, dynamic level, dynamic vocacao, dynamic sexo, dynamic isPremium)
         {
             this.nome = (string)nome;
             this.level = (int)level;

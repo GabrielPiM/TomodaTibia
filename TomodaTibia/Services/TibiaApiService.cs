@@ -13,7 +13,7 @@ namespace TomodaTibiaAPI.Services
 
     public interface ITApiService
     {
-        Task<dynamic> getCharInfo(string _nome);
+        Task<dynamic> Character(string _nome);
     }
 
     public class TibiaApiService : ITApiService
@@ -29,7 +29,7 @@ namespace TomodaTibiaAPI.Services
             _client = httpClient;
         }
 
-        public async Task<dynamic> getCharInfo(string _nome)
+        public async Task<dynamic> Character(string _nome)
         {           
             _nome += ".json";
             var res = await _client.GetAsync(_nome).ConfigureAwait(false);

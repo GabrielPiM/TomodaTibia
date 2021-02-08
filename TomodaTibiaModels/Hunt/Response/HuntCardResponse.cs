@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using TomodaTibiaModels.DB;
 
-namespace TomodaTibiaModels.Hunt
+namespace TomodaTibiaModels.Hunt.Response
 {
-    public class HuntCardModel
+    public class HuntCardResponse
     {
         public int Id { get; set; }
         public string Nome { get; set; }

@@ -7,14 +7,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TomodaTibiaModels.Account;
-
+using TomodaTibiaModels.Account.Request;
 
 namespace TomodaTibiaAPI.Services
 {
 
     public interface IAuthenticationDataService
     {
-        Task<ClaimsPrincipal> Authentication(LoginDTO login);
+        Task<ClaimsPrincipal> Authenticate(LoginRequest login);
     }
 
     public class AuthenticationDataService : IAuthenticationDataService
@@ -27,28 +27,28 @@ namespace TomodaTibiaAPI.Services
             _db = db;
         }
 
-        public async Task<ClaimsPrincipal> Authentication(LoginDTO login)
+        public async Task<ClaimsPrincipal> Authenticate(LoginRequest login)
         {
             var author = await _db.Authors.FirstOrDefaultAsync(a =>
                a.Email == login.Email &&
                a.Password == login.Password
             );
 
-           return author != null ? (SignIn(author)) : null;                
+            return author != null ? (SignIn(author)) : null;
         }
 
         public ClaimsPrincipal SignIn(Author auhtor)
         {
-            ClaimsIdentity identity = new ClaimsIdentity("TomodaTibiaAPI");
+            ClaimsIdentity Identity = new ClaimsIdentity("TomodaTibiaAPI");
+            List<Claim> Claims = new List<Claim>();
 
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier , auhtor.Id.ToString()));
-            identity.AddClaim(new Claim(ClaimTypes.Name, auhtor.Name));
-            identity.AddClaim(new Claim(ClaimTypes.Email, auhtor.Email));
-            identity.AddClaim(new Claim(ClaimTypes.GivenName, auhtor.NameMainChar));
+            Claims.Add(new Claim(valueType: "Int", type: "Id", value: auhtor.Id.ToString()));    
 
-            ClaimsPrincipal principal = new ClaimsPrincipal(new[] { identity});
+            Identity.AddClaims(Claims);
 
-            return principal;   
+            ClaimsPrincipal Principal = new ClaimsPrincipal(new[] { Identity });
+
+            return Principal;
         }
     }
 }

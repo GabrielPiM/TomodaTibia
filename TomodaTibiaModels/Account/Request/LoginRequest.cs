@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TomodaTibiaModels.Account
+namespace TomodaTibiaModels.Account.Request
 {
-    public class LoginDTO
+    public class LoginRequest
     {
 
         public string Email { get; set; }

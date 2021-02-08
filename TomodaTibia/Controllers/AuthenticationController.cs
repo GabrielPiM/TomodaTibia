@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TomodaTibiaAPI.Services;
-using TomodaTibiaModels.Account;
-
+using TomodaTibiaModels.Account.Request;
 
 namespace TomodaTibiaAPI.Controllers
 {
@@ -24,13 +23,15 @@ namespace TomodaTibiaAPI.Controllers
 
         [Authorize]
         [HttpGet("secret")]
-        public IActionResult secretAPI() => Ok("secret api");
+        public IActionResult secretAPI() => Ok("secret api \n" + User.Claims
+                .FirstOrDefault(x => x.Type == "Id").Value
+                .ToString());
 
 
-        [HttpPost("auth")]
-        public async Task<IActionResult> Authenticate(LoginDTO login)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody]LoginRequest login)
         {
-            var accExists = await _dataService.Authentication(login);
+            var accExists = await _dataService.Authenticate(login);
 
             if (accExists != null)
             {
