@@ -6,6 +6,8 @@ namespace TomodaTibiaModels.DB.Response
 {
     public partial class ItemResponse
     {
+
+      
         public string Img { get; set; }
         public int? Qty { get; set; }
         public string Name
@@ -13,7 +15,7 @@ namespace TomodaTibiaModels.DB.Response
             get
             {
                 return Formatting.ExtractName(Img);
-            }
+            }           
         }
     }
 }

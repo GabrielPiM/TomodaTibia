@@ -7,6 +7,7 @@ namespace TomodaTibiaModels.DB.Request
 {
     public partial class PreyRequest
     {
+        public int Id { get; set; }
         public string Img { get; set; }
         public int ReccStars { get; set; }
         public string Type { get { return Formatting.ExtractName(Img); } }

@@ -7,6 +7,7 @@ namespace EFDataAcessLibrary.Models
 {
     public partial class HuntMonster
     {
+        public int Id { get; set; }
         public int? IdHunt { get; set; }
         public int? IdMonster { get; set; }
 

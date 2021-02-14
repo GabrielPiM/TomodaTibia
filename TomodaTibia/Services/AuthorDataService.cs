@@ -20,6 +20,7 @@ namespace TomodaTibiaAPI.Services
         Task<Response<string>> Update(AuthorRequest authorReq);
         Task<Response<string>> Remove(AuthorRequest senha);
         Task<Response<AuthorResponse>> Author(int idAuthor);
+  
 
     }
 
@@ -87,8 +88,18 @@ namespace TomodaTibiaAPI.Services
                 {
                     try
                     {
-                        _db.Authors.Remove(authorToRemove);
-                        await _db.SaveChangesAsync();
+                        using (var dbContextTransaction = _db.Database.BeginTransaction())
+                        {
+                            int adminId = 1;
+                            var huntToChangeAuthor = await _db.Hunts.Where(h => h.IdAuthor == authorToRemove.Id).ToListAsync();
+
+                            huntToChangeAuthor.ForEach(h => h.IdAuthor = adminId);
+
+                            _db.Authors.Remove(authorToRemove);
+
+                            await _db.SaveChangesAsync();
+                            dbContextTransaction.Commit();
+                        }
                     }
                     catch
                     {
@@ -124,7 +135,7 @@ namespace TomodaTibiaAPI.Services
                     try
                     {
                         auhorToUpdate = _mapper.Map<Author>(author);
-                        _db.Authors.Update(auhorToUpdate);                       
+                        _db.Authors.Update(auhorToUpdate);
                         await _db.SaveChangesAsync();
                     }
                     catch
@@ -181,6 +192,6 @@ namespace TomodaTibiaAPI.Services
                 .FirstOrDefault() != null ? true : false;
         }
 
-      
+    
     }
 }

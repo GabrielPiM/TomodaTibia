@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
+#nullable disable
 
-
-namespace TomodaTibiaModels.DB.Response
+namespace TomodaTibiaAPI.Models
 {
-    public partial class VocationResponse
+    public partial class Vocation
     {
         public int? Id { get; set; }
         public string Name { get; set; }

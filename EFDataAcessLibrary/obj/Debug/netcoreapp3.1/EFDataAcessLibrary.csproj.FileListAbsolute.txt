@@ -3,7 +3,6 @@ C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\bin\Debug\
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\bin\Debug\netcoreapp3.1\EFDataAcessLibrary.runtimeconfig.dev.json
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\bin\Debug\netcoreapp3.1\EFDataAcessLibrary.dll
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\bin\Debug\netcoreapp3.1\EFDataAcessLibrary.pdb
-C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\obj\Debug\netcoreapp3.1\EFDataAcessLibrary.csprojAssemblyReference.cache
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\obj\Debug\netcoreapp3.1\EFDataAcessLibrary.AssemblyInfoInputs.cache
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\obj\Debug\netcoreapp3.1\EFDataAcessLibrary.AssemblyInfo.cs
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\EFDataAcessLibrary\obj\Debug\netcoreapp3.1\EFDataAcessLibrary.csproj.CoreCompileInputs.cache

@@ -7,8 +7,8 @@ namespace TomodaTibiaModels.DB.Request
 {
     public partial class HuntClientVersionRequest
     {
-       
-        public int IdClientVersion { get; set; }
+        public int Id { get; set; }
+        public int? IdClientVersion { get; set; }
 
     }
 }

@@ -12,6 +12,7 @@ namespace TomodaTibiaAPI.Utils
 
         public Response()
         {
+            Errors = new List<string>();
         }
         public Response(T data)
         {
@@ -20,11 +21,19 @@ namespace TomodaTibiaAPI.Utils
             Errors = null;
             Data = data;
             StatusCode = 200;
+            Errors = new List<string>();
         }
         public T Data { get; set; }
         public bool Succeeded { get; set; }
-        public string[] Errors { get; set; }
+        public List<String> Errors { get; set; }
         public string Message { get; set; }
         public int StatusCode { get; set; }
+
+        public void SetErrors(Exception ex)
+        {
+            this.Errors.Add("Error message: " + ex.Message != null ? ex.Message : null);
+            this.Errors.Add("Inner exception: " + ex.InnerException.Message != null ? ex.InnerException.Message : null);
+            this.Errors.Add("Stack trace: " + ex.StackTrace != null ? ex.StackTrace : null);
+        }
     }
 }

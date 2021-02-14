@@ -13,7 +13,7 @@ namespace EFDataAcessLibrary.Models
         }
 
         public int Id { get; set; }
-        public int? IdHunt { get; set; }
+        public int IdHunt { get; set; }
         public int Vocation { get; set; }
         public int Level { get; set; }
 

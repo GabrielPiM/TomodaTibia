@@ -9,6 +9,7 @@ namespace EFDataAcessLibrary.Models
     {
         public Monster()
         {
+            HuntMonsters = new HashSet<HuntMonster>();
             HuntPreys = new HashSet<HuntPrey>();
         }
 
@@ -16,6 +17,7 @@ namespace EFDataAcessLibrary.Models
         public string Img { get; set; }
         public bool? IsPray { get; set; }
 
+        public virtual ICollection<HuntMonster> HuntMonsters { get; set; }
         public virtual ICollection<HuntPrey> HuntPreys { get; set; }
     }
 }

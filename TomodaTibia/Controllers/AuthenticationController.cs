@@ -1,47 +1,44 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TomodaTibiaAPI.Services;
+using TomodaTibiaAPI.Utils;
 using TomodaTibiaModels.Account.Request;
 
 namespace TomodaTibiaAPI.Controllers
 {
+
+    [Route("auths")]
     public class AuthenticationController : Controller
     {
 
-        private AuthenticationDataService _dataService;
+        private readonly AuthenticationDataService _dataService;
 
-        public AuthenticationController(AuthenticationDataService dataService)
+        public AuthenticationController(AuthenticationDataService dataService, CurrentUser user)
         {
             _dataService = dataService;
         }
 
-
-        [Authorize]
-        [HttpGet("secret")]
-        public IActionResult secretAPI() => Ok("secret api \n" + User.Claims
-                .FirstOrDefault(x => x.Type == "Id").Value
-                .ToString());
-
-
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]LoginRequest login)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginReq)
         {
-            var accExists = await _dataService.Authenticate(login);
+            var response = await _dataService.SignIn(loginReq, HttpContext);
 
-            if (accExists != null)
-            {
-                await HttpContext.SignInAsync(accExists);
-                return Ok("Sucessfuly Logged In.");
-            }
-
-            return Unauthorized("Failed to login.");
+            return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var response = await _dataService.SingOut(HttpContext);
 
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

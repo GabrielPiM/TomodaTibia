@@ -13,27 +13,31 @@ namespace TomodaTibiaAPI.Maps
     {
         public MapsProfiles()
         {
-            CreateMap<HuntRequest, Hunt>()
-                .ForMember(dest => dest.HuntClientVersions, opt => opt
-                    .MapFrom(src => src.HuntClientVersions.Select(hcv => new HuntClientVersion()
-                        { 
-                            IdClientVersion=hcv.IdClientVersion
-                        })));
-
+            //Requests to Entitys
+            CreateMap<HuntRequest, Hunt>();
             CreateMap<HuntClientVersionRequest, HuntClientVersion>();
             CreateMap<HuntImbuementRequest, HuntImbuement>();
             CreateMap<HuntPreyRequest, HuntPrey>();
             CreateMap<HuntItemRequest, HuntItem>();
+            CreateMap<HuntMonsterRequest, HuntMonster>();
             CreateMap<PlayerRequest, Player>();
             CreateMap<EquipamentRequest, Equipament>();
-
-            CreateMap<Author, AuthorResponse>();
             CreateMap<AuthorRequest, Author>();
-       
 
+            ////Entity to request  
+            CreateMap<HuntRequest, Hunt>().ReverseMap();
+            CreateMap<HuntClientVersionRequest, HuntClientVersion>().ReverseMap();
+            CreateMap<HuntImbuementRequest, HuntImbuement>().ReverseMap();
+            CreateMap<HuntPreyRequest, HuntPrey>().ReverseMap();
+            CreateMap<HuntItemRequest, HuntItem>().ReverseMap();
+            CreateMap<HuntMonsterRequest, HuntMonster>().ReverseMap();
+            CreateMap<PlayerRequest, Player>().ReverseMap();
+            CreateMap<EquipamentRequest, Equipament>().ReverseMap();
 
-            //CreateMap<AuthorRequest, Author>();
-            //CreateMap<AuthorResponse, Author>();
+            ////Entity to Responses
+            CreateMap<Author, AuthorResponse>();
+            CreateMap<Hunt, HuntResponse>();
+            CreateMap<Equipament, EquipamentResponse>();
         }
     }
 }

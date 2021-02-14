@@ -12,8 +12,9 @@ namespace EFDataAcessLibrary.Models
             HuntClientVersions = new HashSet<HuntClientVersion>();
             HuntImbuements = new HashSet<HuntImbuement>();
             HuntItems = new HashSet<HuntItem>();
+            HuntMonsters = new HashSet<HuntMonster>();
             HuntPreys = new HashSet<HuntPrey>();
-            Players = new HashSet<Player>();           
+            Players = new HashSet<Player>();
         }
 
         public int Id { get; set; }
@@ -33,6 +34,7 @@ namespace EFDataAcessLibrary.Models
         public virtual ICollection<HuntClientVersion> HuntClientVersions { get; set; }
         public virtual ICollection<HuntImbuement> HuntImbuements { get; set; }
         public virtual ICollection<HuntItem> HuntItems { get; set; }
+        public virtual ICollection<HuntMonster> HuntMonsters { get; set; }
         public virtual ICollection<HuntPrey> HuntPreys { get; set; }
         public virtual ICollection<Player> Players { get; set; }
     }

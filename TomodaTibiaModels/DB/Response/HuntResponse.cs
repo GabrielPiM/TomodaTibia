@@ -14,9 +14,9 @@ namespace TomodaTibiaModels.DB.Response
             OtherItems = new List<ItemResponse>();
             Preys = new List<PreyResponse>();
             Players = new List<PlayerResponse>();
+            HuntMonsters = new List<MonsterResponse>();
         }
-
- 
+        
         public string Name { get; set; }
         public int NivelMinReq { get; set; }
         public int XpHr { get; set; }
@@ -34,5 +34,6 @@ namespace TomodaTibiaModels.DB.Response
         public List<PreyResponse> Preys { get; set; }
         public List<ImbuementResponse> Imbuements { get; set; }        
         public List<String> Versions { get; set; }
+        public List<MonsterResponse> HuntMonsters { get; set; }
     }
 }

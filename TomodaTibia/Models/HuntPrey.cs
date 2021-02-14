@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
- 
+#nullable disable
 
-namespace TomodaTibiaModels.DB.Response
+namespace TomodaTibiaAPI.Models
 {
-    public partial class HuntPreyResponse
+    public partial class HuntPrey
     {
         public int Id { get; set; }
         public int? IdHunt { get; set; }
@@ -13,6 +13,8 @@ namespace TomodaTibiaModels.DB.Response
         public int? IdMonster { get; set; }
         public int ReccStar { get; set; }
 
-
+        public virtual Hunt IdHuntNavigation { get; set; }
+        public virtual Monster IdMonsterNavigation { get; set; }
+        public virtual Prey IdPreyNavigation { get; set; }
     }
 }

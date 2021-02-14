@@ -17,76 +17,27 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using TomodaTibiaModels.DB.Request;
 using TomodaTibiaAPI.Utils;
+using TomodaTibiaModels.DB.Response;
 
 namespace TomodaTibiaAPI.Controllers
 {
 
-
+    [Route("hunts")]
     public class HuntController : Controller
     {
 
         private readonly HuntDataService _dataService;
+        private readonly CurrentUser _user;
 
-        public HuntController(HuntDataService dataService)
+        public HuntController(HuntDataService dataService, CurrentUser user)
         {
             _dataService = dataService;
-
-        }
-
-        [HttpGet("huntJson")]
-        public ActionResult GetHuntJson()
-        {
-            var hunt = new Hunt();
-
-            hunt.HuntClientVersions.Add(new HuntClientVersion()
-            {
-                IdClientVersion = 1,
-            });
-
-            hunt.HuntImbuements.Add(new HuntImbuement()
-            {
-                IdImbuement = 0,
-                IdImbuementLevel = 0,
-                IdImbuementType = 0,
-                Qty = 0
-            });
-
-            hunt.HuntItems.Add(new HuntItem()
-            {
-                IdItem = 0,
-                Qty = 0
-            });
-
-            hunt.HuntPreys.Add(new HuntPrey()
-            {
-                IdPrey = 0,
-                IdMonster = 0,
-                ReccStar = 0
-            });
-
-            hunt.Players.Add(new Player()
-            {
-                Vocation = 1,
-                Level = 0,
-                Equipaments = new List<Equipament>() { new Equipament() { Id = 0 }, new Equipament() { Id = 0 } }
-
-            });
-
-
-            var huntReq = new HuntRequest();
-            huntReq.HuntImbuements.Add(new HuntImbuementRequest());
-            huntReq.HuntItems.Add(new HuntItemRequest());
-            huntReq.Players.Add(new PlayerRequest());
-            huntReq.Players.First().Equipaments.Add(new EquipamentRequest());
-            huntReq.Players.First().Equipaments.Add(new EquipamentRequest());
-            huntReq.HuntPreys.Add(new HuntPreyRequest());
-            huntReq.HuntClientVersions.Add(new ClientVersionRequest());
-            return Ok(huntReq);
+            _user = user;
         }
 
         //Consulta os dados do personagem e hunt.
-        [HttpGet("search/{charName}")]
-        public async Task<ActionResult> Hunts(string characterName)
+        [HttpGet("search")]
+        public async Task<ActionResult> Hunts([FromRoute] string characterName)
         {
             var response = await _dataService.Search(characterName);
 
@@ -96,25 +47,40 @@ namespace TomodaTibiaAPI.Controllers
 
         //consulta os detalhes da hunt.
         [HttpGet("{idHunt}")]
-        public async Task<ActionResult> HuntDetail([FromRoute]int idHunt)
+        public async Task<ActionResult> HuntDetail(int idHunt)
         {
-            var response = await _dataService.Detail(idHunt);
+            var response = await _dataService.HuntDetail(idHunt);
 
-            //Retorna os detalhes se encontrar.
+            //Retorna os detalhes da hunt se encontrar.
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [Authorize]
+        [HttpGet("req/{idHunt}")]
+        public async Task<ActionResult> GetHuntToUpdate(int idHunt)
+        {
+            var response = await _dataService.GetHuntToUpdate(idHunt, _user.IdAuthor(HttpContext));
+
+            //Retorna os detalhes da hunt se encontrar.
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [Authorize]
+        [HttpGet("author/{idAuthor}")]
+        public async Task<ActionResult> AuthorHuntsList(int idAuthor)
+        {
+            var response = await _dataService.AuthorHuntList(_user.IdAuthor(HttpContext));
+
+            //Retorna a lista de hunts do determinado autor.
             return StatusCode(response.StatusCode, response);
         }
 
         //Adiocina uma hunt.
         [Authorize]
-        [HttpPost("hunt")]
+        [HttpPost]
         public async Task<ActionResult> AddHunt([FromBody] HuntRequest hunt)
         {
-
-            hunt.IdAuthor = int.Parse(User.Claims
-                .FirstOrDefault(x => x.Type == "Id").Value
-                .ToString());
-
-            var response = await _dataService.Add(hunt);
+            var response = await _dataService.Add(hunt, _user.IdAuthor(HttpContext));
 
             return StatusCode(response.StatusCode, response);
         }
@@ -124,25 +90,17 @@ namespace TomodaTibiaAPI.Controllers
         [HttpDelete("{idHunt}")]
         public async Task<ActionResult> RemoveHunt(int idHunt)
         {
-            var idAuthor = int.Parse(User.Claims
-                .FirstOrDefault(x => x.Type == "Id").Value
-                .ToString());
+            var response = await _dataService.Remove(idHunt, _user.IdAuthor(HttpContext));
 
-            var response = await _dataService.Remove(idHunt, idAuthor);
-     
             return StatusCode(response.StatusCode, response);
         }
 
-        //Remove uma hunt.
+        //Atualiza uma hunt.
         [Authorize]
-        [HttpPut("hunt")]
+        [HttpPut]
         public async Task<ActionResult> UpdateHunt([FromBody] HuntRequest hunt)
         {
-            var idAuthor = int.Parse(User.Claims
-                .FirstOrDefault(x => x.Type == "Id").Value
-                .ToString());
-
-            var response = await _dataService.Update(hunt,idAuthor);
+            var response = await _dataService.Update(hunt, _user.IdAuthor(HttpContext));
 
             return StatusCode(response.StatusCode, response);
         }

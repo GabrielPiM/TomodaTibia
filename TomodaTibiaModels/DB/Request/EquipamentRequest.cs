@@ -7,7 +7,7 @@ namespace TomodaTibiaModels.DB.Request
 {
     public partial class EquipamentRequest
     {
-
+        public int Id { get; set; }
         public string Amulet { get; set; }
         public string Bag { get; set; }
         public string Helmet { get; set; }

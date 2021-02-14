@@ -10,7 +10,7 @@ namespace TomodaTibiaModels.Hunt.Response
         public int Id { get; set; }
         public string Nome { get; set; }
         public int? NivelMinRec { get; set; }
-        public IEnumerable<string> URLGif { get; set; }
+        public List<string> Monsters { get; set; }
         public int Difficulty { get; set; }
 
     }

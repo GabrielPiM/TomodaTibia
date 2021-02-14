@@ -17,6 +17,9 @@ namespace TomodaTibiaModels.Character.Response
             this.isPremium = isPremium == "Premium Account" ? true : false;
         }
 
+        public CharacterResponse()
+        { }
+
         public string nome { get; set; }
         public string gifChar { get; set; }
         public int level { get; set; }

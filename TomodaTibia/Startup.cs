@@ -17,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using AutoMapper;
 using TomodaTibiaAPI.Maps;
+using TomodaTibiaAPI.Utils;
+
 
 namespace TomodaTibia
 {
@@ -53,9 +55,10 @@ namespace TomodaTibia
             services.AddScoped<HuntDataService>();
             services.AddScoped<AuthorDataService>();
             services.AddScoped<AuthenticationDataService>();
-                   
-            services.AddHttpClient();
-
+            services.AddScoped<CurrentUser>();
+            
+            //services.AddHttpClient();        
+         
             services.AddMvc().AddNewtonsoftJson(o =>
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;

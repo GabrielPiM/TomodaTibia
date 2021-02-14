@@ -14,20 +14,23 @@ using AutoMapper;
 using TomodaTibiaAPI.Utils;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace TomodaTibiaAPI.Services
 {
     public interface IHuntDataService
     {
-
         //Task<PaginatedList<ToDo>> GetList(int? pageNumber, string sortField, string sortOrder);
         Task<Response<SearchResponse>> Search(string charName);
-        Task<Response<HuntResponse>> Detail(int idHunt);
-        Task<Response<string>> Add(HuntRequest huntReq);
+        Task<Response<HuntResponse>> HuntDetail(int idHunt);
+        Task<Response<HuntRequest>> GetHuntToUpdate(int idHunt, int idAuthor);
+        Task<Response<string>> Add(HuntRequest huntReq, int idAuthor);
         Task<Response<string>> Update(HuntRequest huntReq, int idAuthor);
         Task<Response<string>> Remove(int idHunt, int idAuthor);
-
+        Task<Response<List<HuntResponse>>> AuthorHuntList(int idAuthor);
     }
+
+
     public class HuntDataService : IHuntDataService
     {
         private readonly TomodaTibiaContext _db;
@@ -44,8 +47,8 @@ namespace TomodaTibiaAPI.Services
         //Consulta as hunts ideias para o player.
         public async Task<Response<SearchResponse>> Search(string characterName)
         {
-            var response = new Response<SearchResponse>(null);
-            var responseCharacter = new Response<CharacterResponse>(null);
+            var response = new Response<SearchResponse>(new SearchResponse());
+            var responseCharacter = new Response<CharacterResponse>(new CharacterResponse());
 
             try
             {
@@ -54,33 +57,36 @@ namespace TomodaTibiaAPI.Services
 
                 try
                 {
-                    //Identifica o ID da vocacao do Player
-                    var idVoc = _db.Vocations
+                    //Identifica o ID da vocacao do Player consultante.
+                    var idVocation = _db.Vocations
                         .Where(v => v.Name == response.Data.Character.vocacao)
                         .Select(v => v.Id)
                         .FirstAsync();
 
-                    //Identifica os ids das hunts validas
+                    //Identifica os ids das hunts validas para o player consultante
                     var huntsValidas = _db.Players
-                        .Where(p => p.Id == idVoc.Result)
+                        .Where(p => p.Vocation == idVocation.Result)
                         .Select(p => p.Id)
                         .Distinct();
 
                     //Filtra as hunts por nível e vocação e gera uma coleção de cards
                     var hunts = _db.Hunts
-                        .Where(h => huntsValidas
-                        .Contains(h.Id) && response.Data.Character.level >= h.NivelMinReq)
+                        .Where(h =>
+                        huntsValidas.Contains(h.Id)
+                        && response.Data.Character.level >= h.NivelMinReq
+                        && h.IsValid == true)
+
                         .Select(h => new HuntCardResponse
                         {
                             Id = h.Id,
                             Nome = h.Name,
                             NivelMinRec = h.NivelMinReq,
-                            URLGif = _db.Monsters
-                                .Where(m => m.Id == h.Id)
-                                .Select(m => m.Img)
+                            Monsters = _db.HuntMonsters
+                                .Where(m => m.IdHunt == h.Id)
+                                .Select(m => m.IdMonsterNavigation.Img).ToList()
 
                         }).ToListAsync();
-                    
+
                     response.Data.Hunts = hunts.Result;
                 }
                 catch
@@ -90,12 +96,12 @@ namespace TomodaTibiaAPI.Services
                     response.StatusCode = StatusCodes.Status500InternalServerError;
                 }
             }
-            catch 
+            catch
             {
                 //Erros setados dentro do metodo Character(string characterName) 
                 response.Message = responseCharacter.Message;
                 response.Succeeded = responseCharacter.Succeeded;
-                response.StatusCode = responseCharacter.StatusCode;                 
+                response.StatusCode = responseCharacter.StatusCode;
             }
 
             //Retorna as hunts ou os erros ocorridos.
@@ -103,138 +109,124 @@ namespace TomodaTibiaAPI.Services
         }
 
         //Consulta as informações detalhadas de uma hunt.
-        public async Task<Response<HuntResponse>> Detail(int idHunt)
+        public async Task<Response<HuntResponse>> HuntDetail(int idHunt)
         {
-            var response = new Response<HuntResponse>(null);
+            var response = new Response<HuntResponse>(new HuntResponse());
 
             try
             {
-                //Consulta informacoes da Hunt 
-                var hunt = await _db.Hunts
-                    .Where(h => h.Id == idHunt)
-                    .Select(h => new HuntResponse
-                    {
-                        Name = h.Name,
-                        NivelMinReq = h.NivelMinReq,
-                        XpHr = h.XpHr,
-                        QtyPlayer = h.QtyPlayer,
-                        VideoTutorialUrl = h.VideoTutorialUrl,
-                        DescHunt = h.DescHunt,
-                        Difficulty = h.Difficulty,
-                        Rating = h.Rating,
-                        IsPremium = h.IsPremium
 
-                    }).FirstAsync();
+                var hunt = _mapper.Map<HuntResponse>(await _db.Hunts
+                    .Where(h => h.Id == idHunt && h.IsValid == true).FirstOrDefaultAsync());
 
-                //Return caso não encontrada
-                if (hunt == null) return null;
-
-                hunt.Players = await _db.Players.Where(p => p.IdHunt == idHunt)
-                    .Select(p => new PlayerResponse
-                    {
-                        Vocation = p.Vocation,
-                        Level = p.Level,
-                        Equipaments = _db.Equipaments.Where(e => e.Id == p.Id)
-                        .Select(e => new EquipamentResponse
+                if (hunt != null)
+                {
+                    hunt.Players = await _db.Players
+                        .Where(h => h.IdHunt == idHunt)
+                        .Include(e => e.Equipaments)
+                        .Select(p => new PlayerResponse()
                         {
-                            Amulet = e.Amulet,
-                            Bag = e.Bag,
-                            Helmet = e.Helmet,
-                            Armor = e.Armor,
-                            WeaponRight = e.WeaponRight,
-                            WeaponLeft = e.WeaponLeft,
-                            Ring = e.Ring,
-                            Legs = e.Legs,
-                            Boots = e.Boots,
-                            Ammo = e.Ammo
+                            Vocation = _db.Vocations.Where(v => v.Id == p.Vocation).Select(v => v.Name).First(),
+                            Level = p.Level,
+                            Equipaments = _mapper.Map<EquipamentResponse>(p.Equipaments.First())
+                        })
+                        .ToListAsync();
 
-                        }).First()
 
-                    }).ToListAsync();
-
-                //Consulta outros Items da hunt
-                hunt.OtherItems = await _db.HuntItems
-                    .Where(i => i.IdHunt == idHunt)
-                    .Select(i => new ItemResponse
-                    {
-                        Img = i.IdItemNavigation.Img,
-                        Qty = i.Qty
-
-                    }).ToListAsync();
-
-                //Preys desta hunt.
-                hunt.Preys = await _db.HuntPreys.Where(h => h.IdHunt == idHunt)
-                    .Select(p => new PreyResponse
-                    {
-                        Img = p.IdMonsterNavigation.Img,
-                        ReccStars = p.ReccStar,
-                        Monster = new MonsterResponse
+                    hunt.OtherItems = await _db.HuntItems
+                        .Where(i => i.IdHunt == idHunt)
+                        .Select(i => new ItemResponse
                         {
-                            Img = p.IdMonsterNavigation.Img
-                        }
-                    }).ToListAsync();
+                            Img = i.IdItemNavigation.Img,
+                            Qty = i.Qty
 
-                //Imbuements desta hunt.
-                hunt.Imbuements = await _db.HuntImbuements.Where(hi => hi.IdHunt == idHunt)
-                    .Select(h => new ImbuementResponse
-                    {
-                        Category = h.IdImbuementNavigation.Category,
+                        }).ToListAsync();
 
-                        Value = _db.ImbuementDescs
-                        .Where(desc => desc.IdImbuementLevel == h.IdImbuementLevel
-                            && desc.IdImbuementType == h.IdImbuementType)
-                        .Select(desc2 => desc2.Value)
-                        .First(),
-
-                        Desc = h.IdImbuementNavigation.Desc,
-                        Level = h.IdImbuementLevelNavigation.Name,
-                        Qty = h.Qty,
-                        Img = h.IdImbuementNavigation.Img,
-
-                        Items = _db.ImbuementItems
-                        .Where(i => i.IdImbuement == h.IdImbuementNavigation.Id
-                          && i.IdImbuementLevel <= h.IdImbuementLevel)
-                        .Select(it => new ItemResponse
+                    //Preys desta hunt.
+                    hunt.Preys = await _db.HuntPreys
+                        .Where(h => h.IdHunt == idHunt)
+                        .Select(p => new PreyResponse
                         {
-                            Img = it.IdItemNavigation.Img,
-                            Qty = it.Qty
-                        }).ToList()
+                            Img = p.IdMonsterNavigation.Img,
+                            ReccStars = p.ReccStar,
+                            Monster = new MonsterResponse
+                            {
+                                Img = p.IdMonsterNavigation.Img
+                            }
+                        }).ToListAsync();
 
-                    }).ToListAsync();
+                    //Imbuements desta hunt.
+                    hunt.Imbuements = await _db.HuntImbuements.Where(hi => hi.IdHunt == idHunt)
+                        .Select(h => new ImbuementResponse
+                        {
+                            Category = h.IdImbuementNavigation.Category,
+
+                            Value = _db.ImbuementDescs
+                            .Where(desc => desc.IdImbuementLevel == h.IdImbuementLevel
+                                && desc.IdImbuementType == h.IdImbuementType)
+                            .Select(desc2 => desc2.Value)
+                            .First(),
+
+                            Desc = h.IdImbuementNavigation.Desc,
+                            Level = h.IdImbuementLevelNavigation.Name,
+                            Qty = h.Qty,
+                            Img = h.IdImbuementNavigation.Img,
+
+                            Items = _db.ImbuementItems
+                            .Where(i => i.IdImbuement == h.IdImbuementNavigation.Id
+                              && i.IdImbuementLevel <= h.IdImbuementLevel)
+                            .Select(it => new ItemResponse
+                            {
+                                Img = it.IdItemNavigation.Img,
+                                Qty = it.Qty
+                            }).ToList()
+
+                        }).ToListAsync();
+
+                    //Versões do client dessa hunt
+                    hunt.Versions = await _db.HuntClientVersions
+                        .Where(h => h.IdHunt == idHunt)
+                        .Select(v => v.IdClientVersionNavigation.VersionName)
+                        .ToListAsync();
+
+                    hunt.HuntMonsters = await _db.HuntMonsters
+                        .Where(m => m.IdHunt == idHunt)
+                        .Select(mo => new MonsterResponse()
+                        {
+                            Img = mo.IdMonsterNavigation.Img
+                        })
+                        .ToListAsync();
 
 
-                //Versões do client dessa hunt
-                hunt.Versions = await _db.HuntClientVersions.Where(h => h.IdHunt == idHunt)
-                    .Select(cv => cv.IdClientVersionNavigation.VersionName)
-                    .ToListAsync();
-
-                response.Data = hunt;
-                response.Message = "Search completed successfully.";
+                    response.Data = hunt;
+                    response.Message = "Search completed successfully.";
+                }
+                else
+                {
+                    response.Succeeded = false;
+                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Message = "Hunt not found.";
+                }
             }
-            catch(Exception ex)
+            catch
             {
-                response.Errors = new string[3];
-
-                response.Errors[0] = ex.Message;
-                response.Errors[1] = ex.StackTrace;
-           
-         
-
-                response.Message = "Error when searching.";
                 response.Succeeded = false;
                 response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "Error when searching.";
             }
 
-
-            //Retorna o HuntDetail
             return response;
         }
 
-        public async Task<Response<string>> Add(HuntRequest huntReq)
+        public async Task<Response<string>> Add(HuntRequest huntReq, int idAuthor)
         {
             var response = new Response<string>(string.Empty);
 
             var newHunt = _mapper.Map<Hunt>(huntReq);
+            newHunt.IdAuthor = idAuthor;
+
+            newHunt.IsValid = false;
+
             try
             {
                 _db.Hunts.Add(newHunt);
@@ -243,7 +235,7 @@ namespace TomodaTibiaAPI.Services
             }
             catch
             {
-                response.Message = "Error when saving hunt.";
+                response.Message = "Error when saving hunt." + huntReq.HuntItems.First().IdItem;
                 response.Succeeded = false;
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
@@ -251,39 +243,97 @@ namespace TomodaTibiaAPI.Services
             return response;
         }
 
+        //Atualizada uma hunt.
         public async Task<Response<string>> Update(HuntRequest huntReq, int idAuthor)
         {
             var response = new Response<string>(string.Empty);
 
-            var huntToUpdate = _mapper.Map<Hunt>(huntReq);
-            huntToUpdate.IdAuthor = idAuthor;
+            var updatedHunt = _mapper.Map<Hunt>(huntReq);
+            updatedHunt.IdAuthor = idAuthor;
 
-            var existsOrOwner = await _db.Hunts.SingleOrDefaultAsync(h => h.Id == huntToUpdate.Id && h.IdAuthor == huntToUpdate.IdAuthor);
-
-            if (existsOrOwner != null)
+            try
             {
-                try
+                var huntInDb = await _db.Hunts
+                    .SingleOrDefaultAsync(h =>
+                    h.Id == updatedHunt.Id
+                    && h.IdAuthor == updatedHunt.IdAuthor
+                    && h.IsValid == true);
+
+                if (huntInDb != null)
                 {
-                    _db.Hunts.Update(huntToUpdate);
+                    updatedHunt.IsValid = false;
+
+                    _db.Hunts.Remove(huntInDb);
+                    _db.Hunts.Add(CleanHuntKeysToUpdate(updatedHunt));
                     _db.SaveChanges();
-                    response.Message = "The hunt was removed.";
+
+                    response.Data = updatedHunt.Id.ToString();
+                    response.Message = "The hunt was updated.";
                 }
-                catch
+                else
                 {
-                    response.Message = "Error removing the hunt.";
+
+                    response.Message = "You are not the author of this hunt or it does not exist.";
                     response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status500InternalServerError;
+                    response.StatusCode = StatusCodes.Status400BadRequest;
                 }
             }
+            catch (Exception ex)
             {
-                response.Message = "You are not the author of this hunt or it does not exist.";
+                response.SetErrors(ex);
+                response.Message = "Error updating the hunt.";
                 response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status400BadRequest;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             return response;
         }
 
+        //Obtem uma hunt para ser atualizada.
+        public async Task<Response<HuntRequest>> GetHuntToUpdate(int idHunt, int idAuthor)
+        {
+
+            var response = new Response<HuntRequest>(new HuntRequest());
+
+            try
+            {
+                var partialHunt = await _db.Hunts.FirstOrDefaultAsync(h =>
+                h.Id == idHunt
+                && h.IdAuthor == idAuthor
+                && h.IsValid == true);
+
+                if (partialHunt != null)
+                {
+                    var hunt = await _db.Hunts.Where(h => h.Id == idHunt && h.IdAuthor == idAuthor)
+                        .Include(h => h.HuntClientVersions)
+                        .Include(h => h.HuntImbuements)
+                        .Include(h => h.HuntItems)
+                        .Include(h => h.HuntMonsters)
+                        .Include(h => h.HuntPreys)
+                        .Include(h => h.Players)
+                        .ThenInclude(h => h.Equipaments)
+                        .FirstAsync();
+
+                    response.Data = _mapper.Map<HuntRequest>(hunt);
+
+                    response.Message = "Hunt Found.";
+                }
+                else
+                {
+                    response.Message = "You are not the author of this hunt or it does not exist.";
+                    response.Succeeded = false;
+                    response.StatusCode = StatusCodes.Status400BadRequest;
+                }
+            }
+            catch
+            {
+                response.Message = "Error searching the hunt.";
+                response.Succeeded = false;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+            }
+
+            return response;
+        }
         public async Task<Response<string>> Remove(int idHunt, int idAuthor)
         {
             var response = new Response<string>(string.Empty);
@@ -294,7 +344,8 @@ namespace TomodaTibiaAPI.Services
             {
                 try
                 {
-                    _db.Hunts.Remove(huntToRemove);
+                    //Removido logicamente.
+                    huntToRemove.IsValid = false;
                     _db.SaveChanges();
                     response.Message = "The hunt was removed.";
                 }
@@ -305,6 +356,7 @@ namespace TomodaTibiaAPI.Services
                     response.StatusCode = StatusCodes.Status500InternalServerError;
                 }
             }
+            else
             {
                 response.Message = "You are not the author of this hunt or it does not exist.";
                 response.Succeeded = false;
@@ -314,7 +366,40 @@ namespace TomodaTibiaAPI.Services
             return response;
         }
 
-        //Consulta as informações do personagem.
+        //Lista as hunts do então author.
+        public async Task<Response<List<HuntResponse>>> AuthorHuntList(int idAuthor)
+        {
+            var response = new Response<List<HuntResponse>>(new List<HuntResponse>());
+
+            try
+            {
+                response.Data = _mapper
+                    .Map<List<HuntResponse>>(await _db.Hunts
+                    .Where(h => h.IdAuthor == idAuthor && h.IsValid == true)
+                    .ToListAsync());
+
+                if (response.Data.Count != 0)
+                {
+                    response.Message = $"{response.Data.Count} Hunt(s) found!.";
+                }
+                else
+                {
+                    response.Message = "No hunt was found.";
+                    response.Data = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.SetErrors(ex);
+                response.Message = "Error when consulting your hunts";
+                response.Succeeded = false;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+            }
+
+            return response;
+        }
+
+        //Consulta as informações do personagem atraves da API do tibia.
         private async Task<Response<CharacterResponse>> Character(string characterName)
         {
             var response = new Response<CharacterResponse>(null);
@@ -331,14 +416,14 @@ namespace TomodaTibiaAPI.Services
                 }
                 else
                 {
-                  response.Data = new CharacterResponse
-                    (
-                      characterSearch.characters.data.name,
-                      characterSearch.characters.data.level,
-                      characterSearch.characters.data.vocation,
-                      characterSearch.characters.data.sex,
-                      characterSearch.characters.data.account_status
-                    );
+                    response.Data = new CharacterResponse
+                      (
+                        characterSearch.characters.data.name,
+                        characterSearch.characters.data.level,
+                        characterSearch.characters.data.vocation,
+                        characterSearch.characters.data.sex,
+                        characterSearch.characters.data.account_status
+                      );
                 }
             }
             catch
@@ -349,6 +434,46 @@ namespace TomodaTibiaAPI.Services
             }
 
             return response;
+        }
+
+        //Limpa campos de primary keys para inserir nova entidade.
+        private Hunt CleanHuntKeysToUpdate(Hunt hunt)
+        {
+            hunt.Id = 0;
+
+            foreach (var verions in hunt.HuntClientVersions)
+            {
+                verions.Id = 0;
+            }
+
+            foreach (var player in hunt.Players)
+            {
+                player.Id = 0;
+                player.Equipaments.First().Id = 0;
+            }
+
+            foreach (var imbue in hunt.HuntImbuements)
+            {
+                imbue.Id = 0;
+            }
+
+            foreach (var item in hunt.HuntItems)
+            {
+                item.Id = 0;
+            }
+
+            foreach (var monster in hunt.HuntMonsters)
+            {
+                monster.Id = 0;
+            }
+
+            foreach (var prey in hunt.HuntPreys)
+            {
+                prey.Id = 0;
+            }
+
+            return hunt;
+
         }
     }
 }

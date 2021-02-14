@@ -9,11 +9,10 @@ namespace TomodaTibiaModels.DB.Response
     {
         public PlayerResponse()
         {
-    
+            Equipaments = new EquipamentResponse();
         }
-
-
-        public int Vocation { get; set; }
+             
+        public string Vocation { get; set; }
         public int Level { get; set; }
  
         public virtual EquipamentResponse Equipaments { get; set; }
