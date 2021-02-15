@@ -15,7 +15,7 @@ Ajudar novos jogadores  do jogo Tibia a progredir mais facilmente atraves da con
 - Tempo necessario (desenvolvimento)
 
 #### Modelagem
-#####- Tecnologias utilizadas
+##### - Tecnologias utilizadas
 - C#,
 - ASP.NET Core
 - Entity Framework
