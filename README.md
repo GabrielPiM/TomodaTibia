@@ -1,2 +1,1 @@
-# TomodaTibia
-Website ferramenta para jogadores do jogo tibia. (aspcore, mvc, sql,enity framework, blazor, html, css)
+![Preview1](./GitHubUtils/imgs/logo_grande.png)
