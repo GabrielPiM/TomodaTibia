@@ -59,8 +59,15 @@ Utilizei a abordagem Database First, ou seja, primeiro construiu o banco de dado
 ## Imagens
 
 ### MER
-![Preview1](./GitHubUtils/imgs/erd_lucid.png)  
+![Preview1](./GitHubUtils/imgs/erd_lucid.png |width=500)
 
 ### Diagrama SQL Server Management Studio
 ![Preview1](./GitHubUtils/imgs/erd_db.png)  
+
+### Mockup 1 - Resultado de uma consulta
+![Preview1](./GitHubUtils/imgs/search_result.png)  
+
+### Mockup 2 - Detalhe de um item da consulta
+![Preview1](./GitHubUtils/imgs/hunt_detail.png)  
+
 
