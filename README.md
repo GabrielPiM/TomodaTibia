@@ -1,5 +1,7 @@
 ![Preview1](./GitHubUtils/imgs/logo_grande.png)  
 
+- - - -
+
 ## Objetivo
 
 Ajudar novos jogadores do jogo Tibia a progredir mais facilmente através da conexão com jogadores experientes
