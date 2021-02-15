@@ -46,9 +46,9 @@ Utilizei a abordagem Database First, ou seja, primeiro construiu o banco de dado
 ##### - Execução
 - Criação das regras de negócio
 - Obtenção dos dados (mais de 5000 imagens, informações relevantes) 
- - Foi criado um Web Scraper para a extração e download das imagens.
+  - Foi criado um Web Scraper para a extração e download das imagens.
 - Tratamento dos dados (limpeza e padronização)
- - Criado de um programa capaz de aplicar as correções necessárias aos arquivos
+  - Criado de um programa capaz de aplicar as correções necessárias aos arquivos
 - Modelagem dos dados (MER)
 - Criação do banco de dados
 - Criação da API REST (seguindo padrões recomendados)
