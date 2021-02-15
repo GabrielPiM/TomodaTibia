@@ -4,8 +4,11 @@
 
 ## Objetivo
 
-Ajudar novos jogadores do jogo Tibia a progredir mais facilmente através da conexão com jogadores experientes
+Ajudar novos jogadores do jogo Tibia a progredir mais facilmente através da conexão com jogadores experientes, pois são os jogadores experientes que irão compartilhar o seu conhecimento através do site.
  
+## Funcionamento
+Basta que o jogador digite o nome de seu persogem no site que uma consulta é realiza intregando para ele os melhores lugares
+
 ## Principais etapas do projeto  
 
 #### Planejamento
@@ -59,7 +62,7 @@ Utilizei a abordagem Database First, ou seja, primeiro construiu o banco de dado
 ## Imagens
 
 ### MER
-![Preview1](./GitHubUtils/imgs/erd_lucid.png |width=500)
+![Preview1](./GitHubUtils/imgs/erd_lucid.png)
 
 ### Diagrama SQL Server Management Studio
 ![Preview1](./GitHubUtils/imgs/erd_db.png)  
