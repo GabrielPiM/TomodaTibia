@@ -12,7 +12,7 @@ Ajudar novos jogadores do jogo Tibia a progredir mais facilmente através da con
 - Levantamento e análise de requisitos (funcionais e não funcionais)
 - Complexidade (aplicação como um todo)
 - Custo (hospedagem)
-- Tempo necessário (desenvolvimento)
+* Tempo necessário (desenvolvimento)
 
 
 #### Modelagem
