@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Ajudar novos jogadores  do jogo Tibia a progredir mais facilmente atraves da conexao com jogadores experientes. 
+Ajudar novos jogadores do jogo Tibia a progredir mais facilmente através da conexão com jogadores experientes
  
 ## Principais etapas do projeto  
 
@@ -10,9 +10,10 @@ Ajudar novos jogadores  do jogo Tibia a progredir mais facilmente atraves da con
 
 - Viabilidade (direitos de imagem)
 - Levantamento e análise de requisitos (funcionais e não funcionais)
-- Complexidade (aplicacao como um todo)
+- Complexidade (aplicação como um todo)
 - Custo (hospedagem)
-- Tempo necessario (desenvolvimento)
+- Tempo necessário (desenvolvimento)
+
 
 #### Modelagem
 ##### - Tecnologias utilizadas
@@ -40,17 +41,18 @@ Para o desenvolvimento do design foi utilizado o site [Figma](http://https://www
 
 #### Desenvolvimento
 ##### - Abordagem
-Utilizei a abordagem Database First, ou seja, primeiro construio o banco de dados inteiro para depois partir para a codificacao da API
+Utilizei a abordagem Database First, ou seja, primeiro construiu o banco de dados inteiro para depois partir para a codificação da API
 
 ##### - Execução
-- Criação das regras de negocio
-- Obtenção dos dados (mais de 5000 imagens, informacoes relevantes)
- - Criado um Web Scrapper para a extração e download das imagens.
-- Tratamento dos dados (limpeza e padronizacao)
- -  Criado de um programa capaz de aplicar as correcoes necessarias aos arquivos
+- Criação das regras de negócio
+- Obtenção dos dados (mais de 5000 imagens, informações relevantes) 
+ - Foi criado um Web Scraper para a extração e download das imagens.
+- Tratamento dos dados (limpeza e padronização)
+ - Criado de um programa capaz de aplicar as correções necessárias aos arquivos
 - Modelagem dos dados (MER)
-- Criacao do banco de dados
-- Criacao da API REST (seguindo padroes recomendados)
+- Criação do banco de dados
+- Criação da API REST (seguindo padrões recomendados)
+
 
 ## Imagens
 
