@@ -19,3 +19,4 @@ C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Debug\n
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Debug\netstandard2.0\TomodaTibiaModels.csproj.CoreCompileInputs.cache
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Debug\netstandard2.0\TomodaTibiaModels.dll
 C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Debug\netstandard2.0\TomodaTibiaModels.pdb
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Debug\netstandard2.0\TomodaTibiaModels.csprojAssemblyReference.cache

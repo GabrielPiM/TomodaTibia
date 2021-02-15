@@ -1,0 +1,9 @@
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\bin\Release\netstandard2.0\TomodaTibiaModels.deps.json
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\bin\Release\netstandard2.0\TomodaTibiaModels.dll
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\bin\Release\netstandard2.0\TomodaTibiaModels.pdb
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Release\netstandard2.0\TomodaTibiaModels.csprojAssemblyReference.cache
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Release\netstandard2.0\TomodaTibiaModels.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Release\netstandard2.0\TomodaTibiaModels.AssemblyInfo.cs
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Release\netstandard2.0\TomodaTibiaModels.csproj.CoreCompileInputs.cache
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Release\netstandard2.0\TomodaTibiaModels.dll
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TomodaTibiaModels\obj\Release\netstandard2.0\TomodaTibiaModels.pdb
