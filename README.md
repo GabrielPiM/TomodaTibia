@@ -1,12 +1,12 @@
 ![Preview1](./GitHubUtils/imgs/logo_grande.png)  
 
-##Objetivo
+## Objetivo
 
 Ajudar novos jogadores  do jogo Tibia a progredir mais facilmente atraves da conexao com jogadores experientes. 
  
-##Principais etapas do projeto  
+## Principais etapas do projeto  
 
-####Planejamento
+#### Planejamento
 
 - Viabilidade (direitos de imagem)
 - Levantamento e análise de requisitos (funcionais e não funcionais)
@@ -14,7 +14,7 @@ Ajudar novos jogadores  do jogo Tibia a progredir mais facilmente atraves da con
 - Custo (hospedagem)
 - Tempo necessario (desenvolvimento)
 
-####Modelagem
+#### Modelagem
 #####- Tecnologias utilizadas
 - C#,
 - ASP.NET Core
@@ -38,7 +38,7 @@ Para o desenvolvimento do diagrama MER foi utilizado o site [Lucid Chart](https:
 Para o desenvolvimento do design foi utilizado o site [Figma](http://https://www.figma.com/ "Figma")
 
 
-####Desenvolvimento
+#### Desenvolvimento
 #####- Abordagem
 Utilizei a abordagem Database First, ou seja, primeiro construio o banco de dados inteiro para depois partir para a codificacao da API
 
@@ -52,5 +52,5 @@ Utilizei a abordagem Database First, ou seja, primeiro construio o banco de dado
 - Criacao do banco de dados
 - Criacao da API REST (seguindo padroes recomendados)
 
-##Imagens
+## Imagens
 
