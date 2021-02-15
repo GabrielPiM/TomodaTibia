@@ -26,23 +26,23 @@ Ajudar novos jogadores  do jogo Tibia a progredir mais facilmente atraves da con
 - Lucid Chart
 - Figma
 
-#####- Arquitetura
+##### - Arquitetura
 - API REST
 - Front-End client side (Angular ou Blazor WASM)
 
 
-#####- Banco de dados
+##### - Banco de dados
 Para o desenvolvimento do diagrama MER foi utilizado o site [Lucid Chart](https://www.lucidchart.com/ "Lucid Chart")
 
-#####- Mockup
+##### - Mockup
 Para o desenvolvimento do design foi utilizado o site [Figma](http://https://www.figma.com/ "Figma")
 
 
 #### Desenvolvimento
-#####- Abordagem
+##### - Abordagem
 Utilizei a abordagem Database First, ou seja, primeiro construio o banco de dados inteiro para depois partir para a codificacao da API
 
-#####- Execução
+##### - Execução
 - Criação das regras de negocio
 - Obtenção dos dados (mais de 5000 imagens, informacoes relevantes)
  - Criado um Web Scrapper para a extração e download das imagens.
