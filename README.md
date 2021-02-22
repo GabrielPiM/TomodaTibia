@@ -7,7 +7,7 @@
 Ajudar novos jogadores do jogo Tibia a progredir mais facilmente através da conexão com jogadores experientes, pois são os jogadores experientes que irão compartilhar o seu conhecimento através do site.
  
 ## Funcionamento
-Basta que o jogador digite o nome de seu persogem no site que uma consulta é realiza intregando para ele os melhores lugares
+Basta que o jogador digite o nome de seu persogem no site que uma consulta é realizada entregando para ele os melhores lugares para subir de nível de acordo com diversas regras criadas(ex: nível do personagem, vocação...).
 
 ## Principais etapas do projeto  
 
