@@ -363,9 +363,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
-      "projectName": "TomodaTibiaModels",
-      "projectPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\TomodaTibiaModels.csproj",
+      "projectUniqueName": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\xxxx.csproj",
+      "projectName": "xxxx",
+      "projectPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\xxxx.csproj",
       "packagesPath": "C:\\Users\\gabri\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\gabri\\source\\repos\\GabrielPiM\\TomodaTibia\\TomodaTibiaModels\\obj\\",
       "projectStyle": "PackageReference",

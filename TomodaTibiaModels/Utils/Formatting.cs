@@ -14,10 +14,15 @@ namespace TomodaTibiaModels.Utils
         public static string ExtractName(string input)
         {
             input = input.Replace("_"," ");
-            input = myTI.ToTitleCase(input);
+            input = ToPascalCase(input);
             input = input.Substring(0, input.Length - 4);
 
             return input;
+        }
+
+        public static string ToPascalCase(String someString)
+        {
+            return myTI.ToTitleCase(someString);
         }
     }
 }

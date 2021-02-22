@@ -23,6 +23,7 @@ namespace TomodaTibiaAPI.Maps
             CreateMap<PlayerRequest, Player>();
             CreateMap<EquipamentRequest, Equipament>();
             CreateMap<AuthorRequest, Author>();
+            CreateMap<HuntLootRequest, HuntLoot>();
 
             ////Entity to request  
             CreateMap<HuntRequest, Hunt>().ReverseMap();
@@ -33,11 +34,13 @@ namespace TomodaTibiaAPI.Maps
             CreateMap<HuntMonsterRequest, HuntMonster>().ReverseMap();
             CreateMap<PlayerRequest, Player>().ReverseMap();
             CreateMap<EquipamentRequest, Equipament>().ReverseMap();
+            CreateMap<HuntLootRequest, HuntLoot>().ReverseMap();
 
             ////Entity to Responses
             CreateMap<Author, AuthorResponse>();
             CreateMap<Hunt, HuntResponse>();
             CreateMap<Equipament, EquipamentResponse>();
+
         }
     }
 }

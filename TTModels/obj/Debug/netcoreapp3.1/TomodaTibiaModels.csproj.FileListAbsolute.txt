@@ -1,0 +1,9 @@
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\bin\Debug\netcoreapp3.1\TomodaTibiaModels.deps.json
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\bin\Debug\netcoreapp3.1\TomodaTibiaModels.dll
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\bin\Debug\netcoreapp3.1\TomodaTibiaModels.pdb
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\obj\Debug\netcoreapp3.1\TomodaTibiaModels.csprojAssemblyReference.cache
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\obj\Debug\netcoreapp3.1\TomodaTibiaModels.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\obj\Debug\netcoreapp3.1\TomodaTibiaModels.AssemblyInfo.cs
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\obj\Debug\netcoreapp3.1\TomodaTibiaModels.csproj.CoreCompileInputs.cache
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\obj\Debug\netcoreapp3.1\TomodaTibiaModels.dll
+C:\Users\gabri\source\repos\GabrielPiM\TomodaTibia\TTModels\obj\Debug\netcoreapp3.1\TomodaTibiaModels.pdb

@@ -15,96 +15,139 @@ using TomodaTibiaAPI.Utils;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 using System.Reflection;
+using TomodaTibiaAPI.Utils.Pagination;
+
+using TomodaTibiaAPI.BLL;
+using TomodaTibiaModels.Utils;
 
 namespace TomodaTibiaAPI.Services
 {
     public interface IHuntDataService
     {
         //Task<PaginatedList<ToDo>> GetList(int? pageNumber, string sortField, string sortOrder);
-        Task<Response<SearchResponse>> Search(string charName);
+        Task<Response<SearchResponse>> Search(SearchParameterRequest parameters);
         Task<Response<HuntResponse>> HuntDetail(int idHunt);
-        Task<Response<HuntRequest>> GetHuntToUpdate(int idHunt, int idAuthor);
+        Task<Response<HuntRequest>> HuntToUpdate(int idHunt, int idAuthor);
         Task<Response<string>> Add(HuntRequest huntReq, int idAuthor);
         Task<Response<string>> Update(HuntRequest huntReq, int idAuthor);
         Task<Response<string>> Remove(int idHunt, int idAuthor);
         Task<Response<List<HuntResponse>>> AuthorHuntList(int idAuthor);
     }
 
-
     public class HuntDataService : IHuntDataService
     {
         private readonly TomodaTibiaContext _db;
         private readonly TibiaApiService _api;
         private readonly IMapper _mapper;
+        private readonly HuntBLL _bll;
+        private List<string> Errors;
 
-        public HuntDataService(TomodaTibiaContext db, TibiaApiService api, IMapper mapper)
+        public HuntDataService(TomodaTibiaContext db, TibiaApiService api, IMapper mapper, HuntBLL huntbll)
         {
             _db = db;
             _api = api;
             _mapper = mapper;
+            _bll = huntbll;
+            Errors = new List<string>();
         }
 
         //Consulta as hunts ideias para o player.
-        public async Task<Response<SearchResponse>> Search(string characterName)
+        public async Task<Response<SearchResponse>> Search(SearchParameterRequest parameters)
         {
             var response = new Response<SearchResponse>(new SearchResponse());
             var responseCharacter = new Response<CharacterResponse>(new CharacterResponse());
 
-            try
+            //Valida parametros.
+            var checkParameters = _bll.CheckParameters(parameters);
+            if (checkParameters.Succeeded)
             {
-                responseCharacter = await Character(characterName);
-                response.Data.Character = responseCharacter.Data;
-
                 try
                 {
-                    //Identifica o ID da vocacao do Player consultante.
-                    var idVocation = _db.Vocations
-                        .Where(v => v.Name == response.Data.Character.vocacao)
-                        .Select(v => v.Id)
-                        .FirstAsync();
+                    //é uma pesquisa por nome?
+                    if (!string.IsNullOrEmpty(parameters.CharacterName))
+                    {
+                        responseCharacter = await GetAPICharacter(parameters.CharacterName);
+                        response.Data.Character = responseCharacter.Data;
 
-                    //Identifica os ids das hunts validas para o player consultante
-                    var huntsValidas = _db.Players
-                        .Where(p => p.Vocation == idVocation.Result)
-                        .Select(p => p.Id)
-                        .Distinct();
+                        //Identifica o ID da vocacao do Player.
+                        var idVocation = await _db.Vocations
+                            .Where(v => v.Name == response.Data.Character.Vocation)
+                            .Select(v => v.Id)
+                            .FirstAsync();
 
-                    //Filtra as hunts por nível e vocação e gera uma coleção de cards
-                    var hunts = _db.Hunts
-                        .Where(h =>
-                        huntsValidas.Contains(h.Id)
-                        && response.Data.Character.level >= h.NivelMinReq
-                        && h.IsValid == true)
+                        //Copia os valores do character para filtragem
+                        parameters.ConfiureDefaults();
+                        parameters.Vocation.Add(idVocation);
+                        parameters.Level.Add(response.Data.Character.level);
+                        parameters.IsPremium = response.Data.Character.IsPremium;
+                    }
 
-                        .Select(h => new HuntCardResponse
+                    try
+                    {
+                        //Identifica os ids das hunts validas para o player consultante
+                        var huntsValidas = await _db.Players
+                            .Where(p => parameters.Vocation.Contains(p.Vocation))
+                            .Select(p => p.IdHunt)
+                            .Distinct()
+                            .ToListAsync();
+
+                        //Filtra as hunts com base nos parametros fornecidos.
+                        var hunts = await _db.Hunts
+                            .Where(h =>
+                            huntsValidas.Contains(h.Id)
+                            && (parameters.QtyPlayer.Contains(h.QtyPlayer))
+                            && parameters.IdClientVersion.Contains(h.HuntClientVersions.First().IdClientVersion)
+                            && h.IsValid == true
+                            && h.IsPremium == parameters.IsPremium
+                            && h.XpHr >= parameters.XpHr
+                            && h.Rating >= parameters.Rating
+                            && parameters.IdAuthor == 0 || h.IdAuthor == parameters.IdAuthor
+                            && (h.LevelMinReq > parameters.Level.First() && h.LevelMinReq <= parameters.Level.Last())
+                            && (h.Difficulty >= parameters.Difficulty.First() && h.Difficulty <= parameters.Difficulty.Last())
+                            && parameters.IdLoot == 0 || h.HuntLoots.First().IdItem == parameters.IdLoot)
+                            .Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize)
+                            .Select(h => new HuntCardResponse
+                            {
+                                Id = h.Id,
+                                Nome = h.Name,
+                                LevelMinReq = h.LevelMinReq,
+                                Monsters = _db.HuntMonsters
+                                    .Where(m => m.IdHunt == h.Id)
+                                    .Select(m => m.IdMonsterNavigation.Img).ToList()
+
+                            }).ToListAsync();
+
+                        string mens = string.Format("{0}",
+                            hunts.Count == 0 ? "No hunt matched your query, change your query parameters." : ""); ;
+
+                        if (hunts.Count != 0)
                         {
-                            Id = h.Id,
-                            Nome = h.Name,
-                            NivelMinRec = h.NivelMinReq,
-                            Monsters = _db.HuntMonsters
-                                .Where(m => m.IdHunt == h.Id)
-                                .Select(m => m.IdMonsterNavigation.Img).ToList()
-
-                        }).ToListAsync();
-
-                    response.Data.Hunts = hunts.Result;
+                            response.Data.Hunts = hunts;
+                            response.Sucess(mens, response.Data);
+                        }
+                        else
+                        {
+                            Errors.Add(mens);
+                            response.Failed(Errors, StatusCodes.Status400BadRequest);
+                        }
+                    }
+                    catch
+                    {
+                        Errors.Add("Error searching for hunts.");
+                        response.Failed(Errors, StatusCodes.Status500InternalServerError);
+                    }
                 }
                 catch
                 {
-                    response.Message = "Error searching for hunts.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status500InternalServerError;
+                    //Erros setados dentro do metodo Character(string characterName) 
+                    response.Failed(responseCharacter.Errors, responseCharacter.StatusCode);
                 }
             }
-            catch
+            else
             {
-                //Erros setados dentro do metodo Character(string characterName) 
-                response.Message = responseCharacter.Message;
-                response.Succeeded = responseCharacter.Succeeded;
-                response.StatusCode = responseCharacter.StatusCode;
+                response.Failed(checkParameters.Errors, checkParameters.StatusCode);
             }
 
-            //Retorna as hunts ou os erros ocorridos.
             return response;
         }
 
@@ -197,47 +240,69 @@ namespace TomodaTibiaAPI.Services
                         })
                         .ToListAsync();
 
+                    hunt.Loot = await _db.HuntLoots
+                        .Where(l => l.IdHunt == idHunt)
+                        .Select(loot => new LootResponse()
+                        {
+                            Img = loot.IdItemNavigation.Img
+                        }).ToListAsync();
 
-                    response.Data = hunt;
-                    response.Message = "Search completed successfully.";
+                    response.Sucess("Search completed successfully.", hunt);
                 }
                 else
                 {
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
-                    response.Message = "Hunt not found.";
+                    Errors.Add("Hunt not found.");
+                    response.Failed(Errors, StatusCodes.Status400BadRequest);
                 }
             }
             catch
             {
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
-                response.Message = "Error when searching.";
+                Errors.Add("Error when searching.");
+                response.Failed(Errors, StatusCodes.Status500InternalServerError);
             }
 
             return response;
         }
 
+        //Adiciona um hunt.
         public async Task<Response<string>> Add(HuntRequest huntReq, int idAuthor)
         {
             var response = new Response<string>(string.Empty);
+            var checkHunt = _bll.CheckHuntReq(huntReq);
 
-            var newHunt = _mapper.Map<Hunt>(huntReq);
-            newHunt.IdAuthor = idAuthor;
-
-            newHunt.IsValid = false;
-
-            try
+            if (checkHunt.Succeeded)
             {
-                _db.Hunts.Add(newHunt);
-                await _db.SaveChangesAsync();
-                response.Message = "Hunt added.";
+                try
+                {
+                    var huntQueueLimit = _db.Hunts.Where(h => h.IsValid == false && h.IdAuthor == idAuthor).Count();
+
+                    if (huntQueueLimit < 25)
+                    {
+                        var newHunt = _mapper.Map<Hunt>(huntReq);
+                        newHunt.IdAuthor = idAuthor;
+
+                        newHunt.IsValid = false;
+                        _db.Hunts.Add(newHunt);
+                        await _db.SaveChangesAsync();
+
+                        response.Sucess("Hunt added.", newHunt.Id.ToString());
+                    }
+                    else
+                    {
+                        Errors.Add("Approval limit exceeded, the maximum is 25.");
+                        response.Failed(Errors, StatusCodes.Status400BadRequest);
+                    }
+
+                }
+                catch
+                {
+                    Errors.Add("Error when saving hunt.");
+                    response.Failed(Errors, StatusCodes.Status500InternalServerError);
+                }
             }
-            catch
+            else
             {
-                response.Message = "Error when saving hunt." + huntReq.HuntItems.First().IdItem;
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Failed(checkHunt.Errors, checkHunt.StatusCode);
             }
 
             return response;
@@ -247,60 +312,95 @@ namespace TomodaTibiaAPI.Services
         public async Task<Response<string>> Update(HuntRequest huntReq, int idAuthor)
         {
             var response = new Response<string>(string.Empty);
+            var checkHunt = _bll.CheckHuntReq(huntReq);
 
-            var updatedHunt = _mapper.Map<Hunt>(huntReq);
-            updatedHunt.IdAuthor = idAuthor;
-
-            try
+            if (checkHunt.Succeeded)
             {
-                var huntInDb = await _db.Hunts
-                    .SingleOrDefaultAsync(h =>
-                    h.Id == updatedHunt.Id
-                    && h.IdAuthor == updatedHunt.IdAuthor
-                    && h.IsValid == true);
+                var updatedHunt = _mapper.Map<Hunt>(huntReq);
+                updatedHunt.IdAuthor = idAuthor;
 
-                if (huntInDb != null)
+                try
                 {
-                    updatedHunt.IsValid = false;
+                    var huntInDb = await _db.Hunts
+                        .SingleOrDefaultAsync(h =>
+                        h.Id == updatedHunt.Id
+                        && h.IdAuthor == updatedHunt.IdAuthor
+                        && h.IsValid == true);
 
-                    _db.Hunts.Remove(huntInDb);
-                    _db.Hunts.Add(CleanHuntKeysToUpdate(updatedHunt));
-                    _db.SaveChanges();
+                    if (huntInDb != null)
+                    {
+                        updatedHunt.IsValid = false;
 
-                    response.Data = updatedHunt.Id.ToString();
-                    response.Message = "The hunt was updated.";
+                        _db.Hunts.Remove(huntInDb);
+                        _db.Hunts.Add(CleanHuntKeysToUpdate(updatedHunt));
+                        _db.SaveChanges();
+
+                        response.Sucess("The hunt was updated.", updatedHunt.Id.ToString());
+                    }
+                    else
+                    {
+                        Errors.Add("You are not the author of this hunt or it does not exist.");
+                        response.Failed(Errors, StatusCodes.Status400BadRequest);
+                    }
                 }
-                else
+                catch
                 {
-
-                    response.Message = "You are not the author of this hunt or it does not exist.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    Errors.Add("Error updating the hunt.");
+                    response.Failed(Errors, StatusCodes.Status500InternalServerError);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                response.SetErrors(ex);
-                response.Message = "Error updating the hunt.";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Failed(checkHunt.Errors, checkHunt.StatusCode);
+            }
+
+            return response;
+        }
+
+        //Remove uma hunt.
+        public async Task<Response<string>> Remove(int idHunt, int idAuthor)
+        {
+            var response = new Response<string>(string.Empty);
+
+            var huntToRemove = await _db.Hunts.SingleOrDefaultAsync(h => h.Id == idHunt && h.IdAuthor == idAuthor && h.IsValid == true);
+
+            if (huntToRemove != null)
+            {
+                try
+                {
+                    //Removido logicamente.
+                    huntToRemove.IsValid = false;
+                    huntToRemove.DescHunt += huntToRemove.Name;
+                    huntToRemove.Name = "(REMOVED):" + huntToRemove.Name.Length;
+                    _db.SaveChanges();
+
+                    response.Sucess("The hunt was removed.", string.Empty);
+                }
+                catch
+                {
+                    Errors.Add("Error removing the hunt.");
+                    response.Failed(Errors, StatusCodes.Status500InternalServerError);
+                }
+            }
+            else
+            {
+                Errors.Add("You are not the author of this hunt or it does not exist.");
+                response.Failed(Errors, StatusCodes.Status400BadRequest);
             }
 
             return response;
         }
 
         //Obtem uma hunt para ser atualizada.
-        public async Task<Response<HuntRequest>> GetHuntToUpdate(int idHunt, int idAuthor)
+        public async Task<Response<HuntRequest>> HuntToUpdate(int idHunt, int idAuthor)
         {
-
             var response = new Response<HuntRequest>(new HuntRequest());
 
             try
             {
                 var partialHunt = await _db.Hunts.FirstOrDefaultAsync(h =>
                 h.Id == idHunt
-                && h.IdAuthor == idAuthor
-                && h.IsValid == true);
+                && h.IdAuthor == idAuthor);
 
                 if (partialHunt != null)
                 {
@@ -310,57 +410,23 @@ namespace TomodaTibiaAPI.Services
                         .Include(h => h.HuntItems)
                         .Include(h => h.HuntMonsters)
                         .Include(h => h.HuntPreys)
+                        .Include(h => h.HuntLoots)
                         .Include(h => h.Players)
                         .ThenInclude(h => h.Equipaments)
                         .FirstAsync();
 
-                    response.Data = _mapper.Map<HuntRequest>(hunt);
-
-                    response.Message = "Hunt Found.";
+                    response.Sucess("Hunt Found.", _mapper.Map<HuntRequest>(hunt));
                 }
                 else
                 {
-                    response.Message = "You are not the author of this hunt or it does not exist.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    Errors.Add("You are not the author of this hunt or it does not exist.");
+                    response.Failed(Errors, StatusCodes.Status400BadRequest);
                 }
             }
             catch
             {
-                response.Message = "Error searching the hunt.";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
-            }
-
-            return response;
-        }
-        public async Task<Response<string>> Remove(int idHunt, int idAuthor)
-        {
-            var response = new Response<string>(string.Empty);
-
-            var huntToRemove = await _db.Hunts.SingleOrDefaultAsync(h => h.Id == idHunt && h.IdAuthor == idAuthor);
-
-            if (huntToRemove != null)
-            {
-                try
-                {
-                    //Removido logicamente.
-                    huntToRemove.IsValid = false;
-                    _db.SaveChanges();
-                    response.Message = "The hunt was removed.";
-                }
-                catch
-                {
-                    response.Message = "Error removing the hunt.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status500InternalServerError;
-                }
-            }
-            else
-            {
-                response.Message = "You are not the author of this hunt or it does not exist.";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status400BadRequest;
+                Errors.Add("Error searching the hunt.");
+                response.Failed(Errors, StatusCodes.Status500InternalServerError);
             }
 
             return response;
@@ -373,64 +439,68 @@ namespace TomodaTibiaAPI.Services
 
             try
             {
-                response.Data = _mapper
+                var hunts = _mapper
                     .Map<List<HuntResponse>>(await _db.Hunts
-                    .Where(h => h.IdAuthor == idAuthor && h.IsValid == true)
+                    .Where(h => h.IdAuthor == idAuthor)
                     .ToListAsync());
 
                 if (response.Data.Count != 0)
                 {
-                    response.Message = $"{response.Data.Count} Hunt(s) found!.";
+                    response.Sucess($"{response.Data.Count} Hunt(s) found!.", hunts);
                 }
                 else
                 {
-                    response.Message = "No hunt was found.";
-                    response.Data = null;
+                    response.Sucess("No hunt was found.", null);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                response.SetErrors(ex);
-                response.Message = "Error when consulting your hunts";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
+                Errors.Add("Error when consulting your hunts");
+                response.Failed(Errors, StatusCodes.Status500InternalServerError);
             }
 
             return response;
         }
 
         //Consulta as informações do personagem atraves da API do tibia.
-        private async Task<Response<CharacterResponse>> Character(string characterName)
+        private async Task<Response<CharacterResponse>> GetAPICharacter(string characterName)
         {
             var response = new Response<CharacterResponse>(null);
+            var isValidName = _bll.CheckCharName(characterName);
 
-            try
+            if (isValidName.Succeeded)
             {
-                var characterSearch = await _api.Character(characterName);
+                try
+                {
+                    var characterSearch = await _api.Character(characterName);
 
-                if (characterSearch.characters.error != null)
-                {
-                    response.Message = $"Character {characterName} does not exist.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    if (characterSearch.characters.error != null)
+                    {
+                        Errors.Add($"Character {characterName} does not exist.");
+                        response.Failed(Errors, StatusCodes.Status400BadRequest);
+
+                    }
+                    else
+                    {
+                        response.Data = new CharacterResponse
+                          (
+                            characterSearch.characters.data.name,
+                            characterSearch.characters.data.level,
+                            characterSearch.characters.data.vocation,
+                            characterSearch.characters.data.sex,
+                            characterSearch.characters.data.account_status
+                          );
+                    }
                 }
-                else
+                catch
                 {
-                    response.Data = new CharacterResponse
-                      (
-                        characterSearch.characters.data.name,
-                        characterSearch.characters.data.level,
-                        characterSearch.characters.data.vocation,
-                        characterSearch.characters.data.sex,
-                        characterSearch.characters.data.account_status
-                      );
+                    Errors.Add("Error conecting to Tibia APi.");
+                    response.Failed(Errors, StatusCodes.Status503ServiceUnavailable);
                 }
             }
-            catch
+            else
             {
-                response.Message = "Error conecting to Tibia APi.";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                response.Failed(isValidName.Errors, isValidName.StatusCode);
             }
 
             return response;
@@ -472,8 +542,14 @@ namespace TomodaTibiaAPI.Services
                 prey.Id = 0;
             }
 
+            foreach (var loot in hunt.HuntLoots)
+            {
+                loot.Id = 0;
+            }
+
             return hunt;
 
         }
+
     }
 }

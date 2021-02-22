@@ -18,9 +18,9 @@ namespace TomodaTibiaAPI.Controllers
     {
 
         private AuthorDataService _dataService;
-        private readonly CurrentUser _user;
+        private readonly CurrentUserService _user;
 
-        public AuthorController(AuthorDataService dataService, CurrentUser user)
+        public AuthorController(AuthorDataService dataService, CurrentUserService user)
         {
             _dataService = dataService;
             _user = user;
@@ -47,11 +47,11 @@ namespace TomodaTibiaAPI.Controllers
 
         [Authorize]
         [HttpPut]
-        public async Task<ActionResult> UpdateAuthor([FromBody] AuthorRequest author)
+        public async Task<ActionResult> UpdateAuthor([FromBody] AuthorRequest author, [FromBody] string oldPassword)
         {
             author.Id = _user.IdAuthor(HttpContext);
 
-            var response = await _dataService.Update(author);
+            var response = await _dataService.Update(author, oldPassword);
 
             return StatusCode(response.StatusCode, response);
         }

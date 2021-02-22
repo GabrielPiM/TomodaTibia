@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 using AutoMapper;
 using TomodaTibiaAPI.Maps;
 using TomodaTibiaAPI.Utils;
-
+using TomodaTibiaAPI.BLL;
 
 namespace TomodaTibia
 {
@@ -38,7 +38,7 @@ namespace TomodaTibia
             services.AddHttpClient<TibiaApiService>((httpClient) =>
             {
                 httpClient.BaseAddress = new Uri(Configuration["TibiaAPI"]);
-            }); 
+            });
 
             services.AddDbContext<TomodaTibiaContext>(options =>
             {
@@ -52,13 +52,22 @@ namespace TomodaTibia
                 });
             });
 
+            services.AddScoped<BaseBLL>();
+            services.AddScoped<HuntBLL>();
+            services.AddScoped<AuthorBLL>();
+
             services.AddScoped<HuntDataService>();
             services.AddScoped<AuthorDataService>();
             services.AddScoped<AuthenticationDataService>();
-            services.AddScoped<CurrentUser>();
-            
-            //services.AddHttpClient();        
-         
+
+            services.AddScoped<CurrentUserService>();
+            //services.AddSingleton<CacheService>();
+
+
+
+            //services.AddMemoryCache();
+            services.AddHttpClient();
+
             services.AddMvc().AddNewtonsoftJson(o =>
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -81,7 +90,7 @@ namespace TomodaTibia
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

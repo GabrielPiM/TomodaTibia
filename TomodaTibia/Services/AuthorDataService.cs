@@ -6,9 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TomodaTibiaAPI.Utils;
+using TomodaTibiaAPI.BLL;
 using TomodaTibiaModels.DB.Request;
 using TomodaTibiaModels.DB.Response;
+using TomodaTibiaModels.Utils;
 
 namespace TomodaTibiaAPI.Services
 {
@@ -17,11 +18,9 @@ namespace TomodaTibiaAPI.Services
     {
         //Task<Author> Get(Author author);
         Task<Response<string>> Add(AuthorRequest authorReq);
-        Task<Response<string>> Update(AuthorRequest authorReq);
-        Task<Response<string>> Remove(AuthorRequest senha);
+        Task<Response<string>> Update(AuthorRequest authorReq, string oldPassword);
+        Task<Response<string>> Remove(AuthorRequest authorReq);
         Task<Response<AuthorResponse>> Author(int idAuthor);
-  
-
     }
 
     public class AuthorDataService : IAuthorDataService
@@ -29,39 +28,53 @@ namespace TomodaTibiaAPI.Services
 
         private readonly TomodaTibiaContext _db;
         private readonly IMapper _mapper;
+        private readonly AuthorBLL _bll;
+        private List<string> _errors;
 
-        public AuthorDataService(TomodaTibiaContext db, IMapper mapper)
+        public AuthorDataService(TomodaTibiaContext db, IMapper mapper, AuthorBLL bll)
         {
             _db = db;
             _mapper = mapper;
+            _bll = bll;
+            _errors = new List<string>();
         }
 
         public async Task<Response<string>> Add(AuthorRequest authorReq)
         {
             var response = new Response<string>(string.Empty);
+            var checkAuthor = _bll.CheckAuthor(authorReq);
 
-            var author = _mapper.Map<Author>(authorReq);
-
-            if (!EmailExist(author.Email))
+            if (checkAuthor.Succeeded)
             {
-                try
+                var author = _mapper.Map<Author>(authorReq);
+
+                if (!EmailExist(author.Email))
                 {
-                    await _db.Authors.AddAsync(author);
-                    await _db.SaveChangesAsync();
-                    response.Message = "Account Created.";
+                    try
+                    {
+                        author.IsBan = true;
+                        author.IsAdmin = false;
+
+                        await _db.Authors.AddAsync(author);
+                        await _db.SaveChangesAsync();
+
+                        response.Sucess($"Account Created ({author.Name}).", string.Empty);
+                    }
+                    catch
+                    {
+                        _errors.Add("Error when creating accout.");
+                        response.Failed(_errors, StatusCodes.Status500InternalServerError);
+                    }
                 }
-                catch
+                else
                 {
-                    response.Message = "Error when creating accout.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status500InternalServerError;
+                    _errors.Add("This email is already being used.");
+                    response.Failed(_errors, StatusCodes.Status400BadRequest);
                 }
             }
             else
             {
-                response.Message = "This email is already being used.";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status400BadRequest;
+                response.Failed(checkAuthor.Errors, checkAuthor.StatusCode);
             }
 
             return response;
@@ -70,87 +83,92 @@ namespace TomodaTibiaAPI.Services
         public async Task<Response<string>> Remove(AuthorRequest authorReq)
         {
             var response = new Response<string>(string.Empty);
+            var checkAuthor = _bll.CheckAuthorRemove(authorReq);
 
-            try
+            if (checkAuthor.Succeeded)
             {
-                var authorToRemove = await _db.Authors.SingleAsync(a =>
-                a.Id == authorReq.Id
-                && a.Email == authorReq.Email
-                && a.Password == authorReq.Password);
+                try
+                {
+                    var authorToRemove = await _db.Authors.SingleAsync(a =>
+                    a.Id == authorReq.Id
+                    && a.Email == authorReq.Email
+                    && a.Password == authorReq.Password);
 
-                if (authorToRemove == null)
-                {
-                    response.Message = "Wrong email or password.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
-                }
-                else
-                {
-                    try
+                    if (authorToRemove != null)
                     {
                         using (var dbContextTransaction = _db.Database.BeginTransaction())
                         {
                             int adminId = 1;
                             var huntToChangeAuthor = await _db.Hunts.Where(h => h.IdAuthor == authorToRemove.Id).ToListAsync();
 
-                            huntToChangeAuthor.ForEach(h => h.IdAuthor = adminId);
+                            if (huntToChangeAuthor.Count > 0)
+                                huntToChangeAuthor.ForEach(h => h.IdAuthor = adminId);
 
                             _db.Authors.Remove(authorToRemove);
 
                             await _db.SaveChangesAsync();
                             dbContextTransaction.Commit();
+
+                            response.Sucess($"Author ({authorToRemove.Name}) was deleted.", string.Empty);
                         }
                     }
-                    catch
+                    else
                     {
-                        response.Message = "Error when deleting author. ";
-                        response.Succeeded = false;
-                        response.StatusCode = StatusCodes.Status500InternalServerError;
+                        _errors.Add("Wrong email or password.");
+                        response.Failed(_errors, StatusCodes.Status400BadRequest);
                     }
                 }
+                catch
+                {
+                    _errors.Add("Error when deleting author.");
+                    response.Failed(_errors, StatusCodes.Status500InternalServerError);
+                }
             }
-            catch
+            else
             {
-                response.Message = "Error when deleting author. ";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Failed(checkAuthor.Errors, checkAuthor.StatusCode);
             }
 
             return response;
         }
 
-        public async Task<Response<string>> Update(AuthorRequest author)
+        public async Task<Response<string>> Update(AuthorRequest newAuthor, string oldPassword)
         {
             var response = new Response<string>(string.Empty);
+            var checkAuthor = _bll.CheckAuthor(newAuthor);
 
-            try
+            if (checkAuthor.Succeeded)
             {
-                var auhorToUpdate = await _db.Authors.SingleAsync(
-                    a => a.Id == author.Id
-                 && a.Email == author.Email
-                 && a.Password == author.Password);
-
-                if (auhorToUpdate != null)
+                try
                 {
-                    try
+                    var auhorToUpdate = await _db.Authors.SingleAsync(
+                        a => a.Id == newAuthor.Id
+                        && a.Password == oldPassword);
+
+                    if (auhorToUpdate != null)
                     {
-                        auhorToUpdate = _mapper.Map<Author>(author);
+
+                        auhorToUpdate = _mapper.Map<Author>(newAuthor);
                         _db.Authors.Update(auhorToUpdate);
                         await _db.SaveChangesAsync();
+
+                        response.Sucess($"Author ({auhorToUpdate.Name}) has been updated.", string.Empty);
                     }
-                    catch
+                    else
                     {
-                        response.Message = "Error updating author.";
-                        response.Succeeded = false;
-                        response.StatusCode = StatusCodes.Status500InternalServerError;
+                        _errors.Add("Wrong password.");
+                        response.Failed(_errors, StatusCodes.Status400BadRequest);
                     }
                 }
+                catch
+                {
+                    _errors.Add("Error updating author.");
+                    response.Failed(_errors, StatusCodes.Status500InternalServerError);
+                }
             }
-            catch
+            else
             {
-                response.Message = "Author not found.";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status400BadRequest;
+                response.Failed(checkAuthor.Errors, checkAuthor.StatusCode);
             }
 
             return response;
@@ -158,7 +176,7 @@ namespace TomodaTibiaAPI.Services
 
         public async Task<Response<AuthorResponse>> Author(int idAuthor)
         {
-            var response = new Response<AuthorResponse>(null);
+            var response = new Response<AuthorResponse>(new AuthorResponse());
 
             try
             {
@@ -166,20 +184,19 @@ namespace TomodaTibiaAPI.Services
 
                 if (author != null)
                 {
-                    response.Data = _mapper.Map<AuthorResponse>(author);
+
+                    response.Sucess("Author was found.", _mapper.Map<AuthorResponse>(author));
                 }
                 else
                 {
-                    response.Message = "Author not found.";
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    _errors.Add("Author not found.");
+                    response.Failed(_errors, StatusCodes.Status400BadRequest);
                 }
             }
             catch
             {
-                response.Message = "Error getting author.";
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
+                _errors.Add("Error getting author.");
+                response.Failed(_errors, StatusCodes.Status500InternalServerError);
             }
 
             return response;
@@ -192,6 +209,5 @@ namespace TomodaTibiaAPI.Services
                 .FirstOrDefault() != null ? true : false;
         }
 
-    
     }
 }

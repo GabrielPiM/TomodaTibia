@@ -12,6 +12,7 @@ namespace EFDataAcessLibrary.Models
             HuntClientVersions = new HashSet<HuntClientVersion>();
             HuntImbuements = new HashSet<HuntImbuement>();
             HuntItems = new HashSet<HuntItem>();
+            HuntLoots = new HashSet<HuntLoot>();
             HuntMonsters = new HashSet<HuntMonster>();
             HuntPreys = new HashSet<HuntPrey>();
             Players = new HashSet<Player>();
@@ -20,10 +21,10 @@ namespace EFDataAcessLibrary.Models
         public int Id { get; set; }
         public int? IdAuthor { get; set; }
         public string Name { get; set; }
-        public int NivelMinReq { get; set; }
+        public int LevelMinReq { get; set; }
         public int XpHr { get; set; }
         public int QtyPlayer { get; set; }
-        public string VideoTutorialUrl { get; set; }
+        public string TutorialVideoUrl { get; set; }
         public string DescHunt { get; set; }
         public int? Difficulty { get; set; }
         public int? Rating { get; set; }
@@ -34,6 +35,7 @@ namespace EFDataAcessLibrary.Models
         public virtual ICollection<HuntClientVersion> HuntClientVersions { get; set; }
         public virtual ICollection<HuntImbuement> HuntImbuements { get; set; }
         public virtual ICollection<HuntItem> HuntItems { get; set; }
+        public virtual ICollection<HuntLoot> HuntLoots { get; set; }
         public virtual ICollection<HuntMonster> HuntMonsters { get; set; }
         public virtual ICollection<HuntPrey> HuntPreys { get; set; }
         public virtual ICollection<Player> Players { get; set; }

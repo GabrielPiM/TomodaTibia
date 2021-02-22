@@ -10,6 +10,7 @@ namespace EFDataAcessLibrary.Models
         public Item()
         {
             HuntItems = new HashSet<HuntItem>();
+            HuntLoots = new HashSet<HuntLoot>();
             ImbuementItems = new HashSet<ImbuementItem>();
         }
 
@@ -17,6 +18,7 @@ namespace EFDataAcessLibrary.Models
         public string Img { get; set; }
 
         public virtual ICollection<HuntItem> HuntItems { get; set; }
+        public virtual ICollection<HuntLoot> HuntLoots { get; set; }
         public virtual ICollection<ImbuementItem> ImbuementItems { get; set; }
     }
 }

@@ -18,6 +18,8 @@ namespace EFDataAcessLibrary.Models
         public string Password { get; set; }
         public string UrlSocial { get; set; }
         public string NameMainChar { get; set; }
+        public bool? IsBan { get; set; }
+        public bool? IsAdmin { get; set; }
 
         public virtual ICollection<Hunt> Hunts { get; set; }
     }

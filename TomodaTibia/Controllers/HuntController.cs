@@ -7,8 +7,6 @@ using TomodaTibiaAPI;
 using Microsoft.AspNetCore.Http;
 using TomodaTibiaAPI.Services;
 using System.Net.Http;
-
-
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -16,8 +14,11 @@ using EFDataAcessLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using TomodaTibiaModels.DB.Request;
-using TomodaTibiaAPI.Utils;
+using TomodaTibiaModels.Hunt.Response;
 using TomodaTibiaModels.DB.Response;
+using TomodaTibiaAPI.BLL;
+using TomodaTibiaAPI.Utils.Pagination;
+using TomodaTibiaModels.Utils;
 
 namespace TomodaTibiaAPI.Controllers
 {
@@ -27,19 +28,24 @@ namespace TomodaTibiaAPI.Controllers
     {
 
         private readonly HuntDataService _dataService;
-        private readonly CurrentUser _user;
+        private readonly CurrentUserService _user;
 
-        public HuntController(HuntDataService dataService, CurrentUser user)
+
+        public HuntController(HuntDataService dataService, CurrentUserService user)
         {
             _dataService = dataService;
             _user = user;
         }
 
+
         //Consulta os dados do personagem e hunt.
-        [HttpGet("search")]
-        public async Task<ActionResult> Hunts([FromRoute] string characterName)
+        [HttpPost("search")]
+        public async Task<ActionResult> Search([FromBody] SearchParameterRequest parameters)
         {
-            var response = await _dataService.Search(characterName);
+            var response = new Response<SearchResponse>();
+           
+            //Nova consulta de hunts.
+            response = await _dataService.Search(parameters);
 
             //Retorna informações do personagem e as hunts (cards) recomendadas se encontrar.
             return StatusCode(response.StatusCode, response);
@@ -59,7 +65,7 @@ namespace TomodaTibiaAPI.Controllers
         [HttpGet("req/{idHunt}")]
         public async Task<ActionResult> GetHuntToUpdate(int idHunt)
         {
-            var response = await _dataService.GetHuntToUpdate(idHunt, _user.IdAuthor(HttpContext));
+            var response = await _dataService.HuntToUpdate(idHunt, _user.IdAuthor(HttpContext));
 
             //Retorna os detalhes da hunt se encontrar.
             return StatusCode(response.StatusCode, response);

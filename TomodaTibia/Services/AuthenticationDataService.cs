@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TomodaTibiaAPI.Utils;
 using TomodaTibiaModels.Account;
 using TomodaTibiaModels.Account.Request;
+using TomodaTibiaModels.Utils;
 
 namespace TomodaTibiaAPI.Services
 {
@@ -24,10 +25,12 @@ namespace TomodaTibiaAPI.Services
     {
 
         private readonly TomodaTibiaContext _db;
+        private List<string> Errors;
 
         public AuthenticationDataService(TomodaTibiaContext db)
         {
             _db = db;
+            Errors = new List<string>();
         }
 
         public async Task<Response<string>> SignIn(LoginRequest login, HttpContext http)
@@ -42,21 +45,20 @@ namespace TomodaTibiaAPI.Services
 
                 if (author != null)
                 {
-                    await CookieSetup(author, http);
-                    response.Message = "Sucessfuly Logged In.";
+                    await CookieSetup(author, http);              
+
+                    response.Sucess("Sucessfuly Logged In.", string.Empty);
                 }
                 else
                 {
-                    response.Succeeded = false;
-                    response.StatusCode = StatusCodes.Status400BadRequest;
-                    response.Message = "Wrong password or email.";
+                    Errors.Add("Wrong password or email.");
+                    response.Failed(Errors, StatusCodes.Status400BadRequest);
                 }
             }
             catch
             {
-                response.Succeeded = false;
-                response.StatusCode = StatusCodes.Status500InternalServerError;
-                response.Message = "Server failed to login.";
+                Errors.Add("Server failed to login.");
+                response.Failed(Errors, StatusCodes.Status500InternalServerError);
             }
 
             return response;
@@ -82,14 +84,13 @@ namespace TomodaTibiaAPI.Services
 
             try
             {
-                await htpp.SignOutAsync();
-                response.Message = "Logged out.";
+                await htpp.SignOutAsync();        
+                response.Sucess("Logged out.", string.Empty);
             }
             catch
             {
-                response.Succeeded = false;
-                response.Message = "Error logging out.";
-                response.StatusCode = StatusCodes.Status500InternalServerError;
+                Errors.Add("Error logging out.");
+                response.Failed(Errors, StatusCodes.Status500InternalServerError);
             }
 
             return response;

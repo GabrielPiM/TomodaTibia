@@ -24,6 +24,7 @@ namespace EFDataAcessLibrary.Models
         public virtual DbSet<HuntClientVersion> HuntClientVersions { get; set; }
         public virtual DbSet<HuntImbuement> HuntImbuements { get; set; }
         public virtual DbSet<HuntItem> HuntItems { get; set; }
+        public virtual DbSet<HuntLoot> HuntLoots { get; set; }
         public virtual DbSet<HuntMonster> HuntMonsters { get; set; }
         public virtual DbSet<HuntPrey> HuntPreys { get; set; }
         public virtual DbSet<Imbuement> Imbuements { get; set; }
@@ -54,6 +55,14 @@ namespace EFDataAcessLibrary.Models
                     .HasMaxLength(320)
                     .IsUnicode(false)
                     .HasColumnName("email");
+
+                entity.Property(e => e.IsAdmin)
+                    .HasColumnName("is_admin")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.IsBan)
+                    .HasColumnName("is_ban")
+                    .HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -99,36 +108,42 @@ namespace EFDataAcessLibrary.Models
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Ammo)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("ammo")
                     .HasDefaultValueSql("('no_ammo.gif')");
 
                 entity.Property(e => e.Amulet)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("amulet")
                     .HasDefaultValueSql("('no_amulet.gif')");
 
                 entity.Property(e => e.Armor)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("armor")
                     .HasDefaultValueSql("('no_armor.gif')");
 
                 entity.Property(e => e.Bag)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("bag")
                     .HasDefaultValueSql("('no_bag.gif')");
 
                 entity.Property(e => e.Boots)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("boots")
                     .HasDefaultValueSql("('no_boots.gif')");
 
                 entity.Property(e => e.Helmet)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("helmet")
@@ -137,24 +152,28 @@ namespace EFDataAcessLibrary.Models
                 entity.Property(e => e.IdPlayer).HasColumnName("id_player");
 
                 entity.Property(e => e.Legs)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("legs")
                     .HasDefaultValueSql("('no_legs.gif')");
 
                 entity.Property(e => e.Ring)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("ring")
                     .HasDefaultValueSql("('no_ring.gif')");
 
                 entity.Property(e => e.WeaponLeft)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("weapon_left")
                     .HasDefaultValueSql("('no_weapon_left.gif')");
 
                 entity.Property(e => e.WeaponRight)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("weapon_right")
@@ -193,13 +212,13 @@ namespace EFDataAcessLibrary.Models
                     .HasColumnName("is_valid")
                     .HasDefaultValueSql("((0))");
 
+                entity.Property(e => e.LevelMinReq).HasColumnName("level_min_req");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("name");
-
-                entity.Property(e => e.NivelMinReq).HasColumnName("nivel_min_req");
 
                 entity.Property(e => e.QtyPlayer).HasColumnName("qty_player");
 
@@ -207,10 +226,10 @@ namespace EFDataAcessLibrary.Models
                     .HasColumnName("rating")
                     .HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.VideoTutorialUrl)
-                    .HasMaxLength(2048)
+                entity.Property(e => e.TutorialVideoUrl)
+                    .HasMaxLength(1000)
                     .IsUnicode(false)
-                    .HasColumnName("video_tutorial_url")
+                    .HasColumnName("tutorial_video_url")
                     .HasDefaultValueSql("('No Tutorial.')");
 
                 entity.Property(e => e.XpHr).HasColumnName("xp_hr");
@@ -218,14 +237,14 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdAuthorNavigation)
                     .WithMany(p => p.Hunts)
                     .HasForeignKey(d => d.IdAuthor)
-                    .HasConstraintName("FK__hunt__id_author__29572725");
+                    .HasConstraintName("FK__hunt__id_author__2B3F6F97");
             });
 
             modelBuilder.Entity<HuntClientVersion>(entity =>
             {
                 entity.ToTable("hunt_client_version");
 
-                entity.HasIndex(e => new { e.IdHunt, e.IdClientVersion }, "UQ__hunt_cli__2C9F99AC52408E5D")
+                entity.HasIndex(e => new { e.IdHunt, e.IdClientVersion }, "UQ__hunt_cli__2C9F99ACA597B4C0")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -237,7 +256,7 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdClientVersionNavigation)
                     .WithMany(p => p.HuntClientVersions)
                     .HasForeignKey(d => d.IdClientVersion)
-                    .HasConstraintName("FK__hunt_clie__id_cl__33D4B598");
+                    .HasConstraintName("FK__hunt_clie__id_cl__35BCFE0A");
 
                 entity.HasOne(d => d.IdHuntNavigation)
                     .WithMany(p => p.HuntClientVersions)
@@ -249,7 +268,7 @@ namespace EFDataAcessLibrary.Models
             {
                 entity.ToTable("hunt_imbuement");
 
-                entity.HasIndex(e => new { e.IdHunt, e.IdImbuement }, "UQ__hunt_imb__096A23491588BE0D")
+                entity.HasIndex(e => new { e.IdHunt, e.IdImbuement }, "UQ__hunt_imb__096A2349003D507A")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -262,7 +281,9 @@ namespace EFDataAcessLibrary.Models
 
                 entity.Property(e => e.IdImbuementType).HasColumnName("id_imbuement_type");
 
-                entity.Property(e => e.Qty).HasColumnName("qty");
+                entity.Property(e => e.Qty)
+                    .HasColumnName("qty")
+                    .HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.IdHuntNavigation)
                     .WithMany(p => p.HuntImbuements)
@@ -273,24 +294,24 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdImbuementNavigation)
                     .WithMany(p => p.HuntImbuements)
                     .HasForeignKey(d => d.IdImbuement)
-                    .HasConstraintName("FK__hunt_imbu__id_im__6A30C649");
+                    .HasConstraintName("FK__hunt_imbu__id_im__6EF57B66");
 
                 entity.HasOne(d => d.IdImbuementLevelNavigation)
                     .WithMany(p => p.HuntImbuements)
                     .HasForeignKey(d => d.IdImbuementLevel)
-                    .HasConstraintName("FK__hunt_imbu__id_im__6B24EA82");
+                    .HasConstraintName("FK__hunt_imbu__id_im__6FE99F9F");
 
                 entity.HasOne(d => d.IdImbuementTypeNavigation)
                     .WithMany(p => p.HuntImbuements)
                     .HasForeignKey(d => d.IdImbuementType)
-                    .HasConstraintName("FK__hunt_imbu__id_im__6C190EBB");
+                    .HasConstraintName("FK__hunt_imbu__id_im__70DDC3D8");
             });
 
             modelBuilder.Entity<HuntItem>(entity =>
             {
                 entity.ToTable("hunt_item");
 
-                entity.HasIndex(e => new { e.IdHunt, e.IdItem }, "UQ__hunt_ite__14D7D3B66285C6F4")
+                entity.HasIndex(e => new { e.IdHunt, e.IdItem }, "UQ__hunt_ite__14D7D3B6911CC7B4")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -311,15 +332,36 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdItemNavigation)
                     .WithMany(p => p.HuntItems)
                     .HasForeignKey(d => d.IdItem)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__hunt_item__id_it__52593CB8");
+                    .HasConstraintName("FK__hunt_item__id_it__571DF1D5");
+            });
+
+            modelBuilder.Entity<HuntLoot>(entity =>
+            {
+                entity.ToTable("hunt_loot");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.IdHunt).HasColumnName("id_hunt");
+
+                entity.Property(e => e.IdItem).HasColumnName("id_item");
+
+                entity.HasOne(d => d.IdHuntNavigation)
+                    .WithMany(p => p.HuntLoots)
+                    .HasForeignKey(d => d.IdHunt)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("fk_hunt_loot");
+
+                entity.HasOne(d => d.IdItemNavigation)
+                    .WithMany(p => p.HuntLoots)
+                    .HasForeignKey(d => d.IdItem)
+                    .HasConstraintName("FK__hunt_loot__id_it__7E37BEF6");
             });
 
             modelBuilder.Entity<HuntMonster>(entity =>
             {
                 entity.ToTable("hunt_monster");
 
-                entity.HasIndex(e => new { e.IdHunt, e.IdMonster }, "UQ__hunt_mon__E736D91E33926653")
+                entity.HasIndex(e => new { e.IdHunt, e.IdMonster }, "UQ__hunt_mon__E736D91EBC83B481")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -327,6 +369,10 @@ namespace EFDataAcessLibrary.Models
                 entity.Property(e => e.IdHunt).HasColumnName("id_hunt");
 
                 entity.Property(e => e.IdMonster).HasColumnName("id_monster");
+
+                entity.Property(e => e.Qty)
+                    .HasColumnName("qty")
+                    .HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.IdHuntNavigation)
                     .WithMany(p => p.HuntMonsters)
@@ -337,7 +383,7 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdMonsterNavigation)
                     .WithMany(p => p.HuntMonsters)
                     .HasForeignKey(d => d.IdMonster)
-                    .HasConstraintName("FK__hunt_mons__id_mo__3B75D760");
+                    .HasConstraintName("FK__hunt_mons__id_mo__3D5E1FD2");
             });
 
             modelBuilder.Entity<HuntPrey>(entity =>
@@ -363,12 +409,12 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdMonsterNavigation)
                     .WithMany(p => p.HuntPreys)
                     .HasForeignKey(d => d.IdMonster)
-                    .HasConstraintName("FK__hunt_prey__id_mo__73BA3083");
+                    .HasConstraintName("FK__hunt_prey__id_mo__797309D9");
 
                 entity.HasOne(d => d.IdPreyNavigation)
                     .WithMany(p => p.HuntPreys)
                     .HasForeignKey(d => d.IdPrey)
-                    .HasConstraintName("FK__hunt_prey__id_pr__72C60C4A");
+                    .HasConstraintName("FK__hunt_prey__id_pr__787EE5A0");
             });
 
             modelBuilder.Entity<Imbuement>(entity =>
@@ -415,19 +461,19 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdImbuementLevelNavigation)
                     .WithMany(p => p.ImbuementDescs)
                     .HasForeignKey(d => d.IdImbuementLevel)
-                    .HasConstraintName("FK__imbuement__id_im__5CD6CB2B");
+                    .HasConstraintName("FK__imbuement__id_im__619B8048");
 
                 entity.HasOne(d => d.IdImbuementTypeNavigation)
                     .WithMany(p => p.ImbuementDescs)
                     .HasForeignKey(d => d.IdImbuementType)
-                    .HasConstraintName("FK__imbuement__id_im__5DCAEF64");
+                    .HasConstraintName("FK__imbuement__id_im__628FA481");
             });
 
             modelBuilder.Entity<ImbuementItem>(entity =>
             {
                 entity.ToTable("imbuement_item");
 
-                entity.HasIndex(e => new { e.IdImbuement, e.IdItem }, "UQ__imbuemen__F46AD84386EC7639")
+                entity.HasIndex(e => new { e.IdImbuement, e.IdItem }, "UQ__imbuemen__F46AD8431AB5462E")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -443,17 +489,17 @@ namespace EFDataAcessLibrary.Models
                 entity.HasOne(d => d.IdImbuementNavigation)
                     .WithMany(p => p.ImbuementItems)
                     .HasForeignKey(d => d.IdImbuement)
-                    .HasConstraintName("FK__imbuement__id_im__6383C8BA");
+                    .HasConstraintName("FK__imbuement__id_im__68487DD7");
 
                 entity.HasOne(d => d.IdImbuementLevelNavigation)
                     .WithMany(p => p.ImbuementItems)
                     .HasForeignKey(d => d.IdImbuementLevel)
-                    .HasConstraintName("FK__imbuement__id_im__6477ECF3");
+                    .HasConstraintName("FK__imbuement__id_im__693CA210");
 
                 entity.HasOne(d => d.IdItemNavigation)
                     .WithMany(p => p.ImbuementItems)
                     .HasForeignKey(d => d.IdItem)
-                    .HasConstraintName("FK__imbuement__id_it__656C112C");
+                    .HasConstraintName("FK__imbuement__id_it__6A30C649");
             });
 
             modelBuilder.Entity<ImbuementLevel>(entity =>
@@ -520,7 +566,9 @@ namespace EFDataAcessLibrary.Models
 
                 entity.Property(e => e.IdHunt).HasColumnName("id_hunt");
 
-                entity.Property(e => e.Level).HasColumnName("level");
+                entity.Property(e => e.Level)
+                    .HasColumnName("level")
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Vocation).HasColumnName("vocation");
 

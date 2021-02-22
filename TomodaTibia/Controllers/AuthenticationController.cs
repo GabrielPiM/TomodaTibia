@@ -19,7 +19,7 @@ namespace TomodaTibiaAPI.Controllers
 
         private readonly AuthenticationDataService _dataService;
 
-        public AuthenticationController(AuthenticationDataService dataService, CurrentUser user)
+        public AuthenticationController(AuthenticationDataService dataService, CurrentUserService user)
         {
             _dataService = dataService;
         }
