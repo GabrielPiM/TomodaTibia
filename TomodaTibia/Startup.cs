@@ -19,6 +19,7 @@ using AutoMapper;
 using TomodaTibiaAPI.Maps;
 using TomodaTibiaAPI.Utils;
 using TomodaTibiaAPI.BLL;
+using AspNetCoreRateLimit;
 
 namespace TomodaTibia
 {
@@ -35,10 +36,29 @@ namespace TomodaTibia
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient<TibiaApiService>((httpClient) =>
-            {
-                httpClient.BaseAddress = new Uri(Configuration["TibiaAPI"]);
-            });
+            #region  RateLimitingConfiguration
+            // needed to load configuration from appsettings.json
+            services.AddOptions();
+
+            // needed to store rate limit counters and ip rules
+            services.AddMemoryCache();
+
+            //load general configuration from appsettings.json
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+
+            //load ip rules from appsettings.json
+            //services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+
+            // inject counter and rules stores
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+
+            // Add framework services.
+            //services.AddMvc();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            // configuration (resolvers, counter key builders)
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            #endregion  
 
             services.AddDbContext<TomodaTibiaContext>(options =>
             {
@@ -52,6 +72,12 @@ namespace TomodaTibia
                 });
             });
 
+            #region Services
+            services.AddHttpClient();
+            services.AddHttpClient<TibiaApiService>((httpClient) =>
+            {
+                httpClient.BaseAddress = new Uri(Configuration["TibiaAPI"]);
+            });
             services.AddScoped<BaseBLL>();
             services.AddScoped<HuntBLL>();
             services.AddScoped<AuthorBLL>();
@@ -59,20 +85,14 @@ namespace TomodaTibia
             services.AddScoped<HuntDataService>();
             services.AddScoped<AuthorDataService>();
             services.AddScoped<AuthenticationDataService>();
-
             services.AddScoped<CurrentUserService>();
-            //services.AddSingleton<CacheService>();
-
-
-
-            //services.AddMemoryCache();
-            services.AddHttpClient();
+            #endregion
 
             services.AddMvc().AddNewtonsoftJson(o =>
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
-
+     
             services.AddAutoMapper(typeof(MapsProfiles));
             services.AddSwaggerGen();
 
@@ -86,6 +106,7 @@ namespace TomodaTibia
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -100,6 +121,8 @@ namespace TomodaTibia
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            app.UseIpRateLimiting();
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -11,13 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("b995e086-a4ef-439e-a1d5-3ec9171d40a8")]
-[assembly: System.Reflection.AssemblyCompanyAttribute("TomodaTibiaAPI")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("TomodaTibiaModels")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-[assembly: System.Reflection.AssemblyProductAttribute("TomodaTibiaAPI")]
-[assembly: System.Reflection.AssemblyTitleAttribute("TomodaTibiaAPI")]
+[assembly: System.Reflection.AssemblyProductAttribute("TomodaTibiaModels")]
+[assembly: System.Reflection.AssemblyTitleAttribute("TomodaTibiaModels")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Gerado pela classe WriteCodeFragment do MSBuild.

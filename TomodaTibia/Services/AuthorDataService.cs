@@ -48,7 +48,7 @@ namespace TomodaTibiaAPI.Services
             {
                 var author = _mapper.Map<Author>(authorReq);
 
-                if (!EmailExist(author.Email))
+                if (!IsEmailResgistered(author.Email))
                 {
                     try
                     {
@@ -202,12 +202,12 @@ namespace TomodaTibiaAPI.Services
             return response;
         }
 
-        private bool EmailExist(string email)
+        private bool IsEmailResgistered(string email)
         {
             return _db.Authors
                 .Where(a => a.Email == email)
-                .FirstOrDefault() != null ? true : false;
+                .FirstOrDefault() == null ? false : true;
         }
-
+  
     }
 }
