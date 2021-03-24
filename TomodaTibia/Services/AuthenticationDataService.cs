@@ -1,4 +1,4 @@
-﻿using EFDataAcessLibrary.Models;
+﻿
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +11,7 @@ using TomodaTibiaAPI.Utils;
 using TomodaTibiaModels.Account;
 using TomodaTibiaModels.Account.Request;
 using TomodaTibiaModels.Utils;
+using TomodaTibiaAPI.EntityFramework;
 
 namespace TomodaTibiaAPI.Services
 {

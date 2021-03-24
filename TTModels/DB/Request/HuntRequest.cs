@@ -1,44 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
+#nullable disable
 
 namespace TomodaTibiaModels.DB.Request
 {
     public partial class HuntRequest
     {
-
-
         public HuntRequest()
         {
-            HuntImbuements = new List<HuntImbuementRequest>();
-            HuntItems = new List<HuntItemRequest>();
-            HuntPreys = new List<HuntPreyRequest>();
-            Players = new List<PlayerRequest>();
+          
             HuntClientVersions = new List<HuntClientVersionRequest>();
+            HuntDescs = new List<HuntDescRequest>();
             HuntMonsters = new List<HuntMonsterRequest>();
-            HuntLoots = new List<HuntLootRequest>();
+            HuntSpecialReqs = new List<HuntSpecialReqRequest>();
+            Players = new List<PlayerRequest>();
         }
 
-        public int Id { get; set; }       
+        public int Id { get; set; }
         public string Name { get; set; }
+        public int IdAuthor { get; set; }
+        public string Location { get; set; }
         public int LevelMinReq { get; set; }
         public int XpHr { get; set; }
-        public int QtyPlayer { get; set; }
-        public string VideoTutorialUrl { get; set; }
-        public string DescHunt { get; set; }
+        public string TutorialVideoUrl { get; set; }
         public int? Difficulty { get; set; }
-        public int? Rating { get; set; }
-        public bool? IsValid { get; set; }
+        public int TeamSize { get; set; }
+        public int IdSituation { get; set; }
         public bool? IsPremium { get; set; }
+  
 
-
-        public List<HuntClientVersionRequest> HuntClientVersions { get; set; }      
-        public List<HuntImbuementRequest> HuntImbuements { get; set; }
-        public List<HuntItemRequest> HuntItems { get; set; }
-        public List<HuntPreyRequest> HuntPreys { get; set; }
-        public List<HuntMonsterRequest> HuntMonsters { get; set; }
-        public List<PlayerRequest> Players { get; set; } 
-        public List<HuntLootRequest> HuntLoots { get; set; }
+        public virtual List<HuntClientVersionRequest> HuntClientVersions { get; set; }
+        public virtual List<HuntDescRequest> HuntDescs { get; set; }
+        public virtual List<HuntMonsterRequest> HuntMonsters { get; set; }
+        public virtual List<HuntSpecialReqRequest> HuntSpecialReqs { get; set; }
+        public virtual List<PlayerRequest> Players { get; set; }
     }
 }

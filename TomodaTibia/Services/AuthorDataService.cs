@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EFDataAcessLibrary.Models;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TomodaTibiaAPI.BLL;
+using TomodaTibiaModels.Account.Request;
 using TomodaTibiaModels.DB.Request;
 using TomodaTibiaModels.DB.Response;
 using TomodaTibiaModels.Utils;
+using TomodaTibiaAPI.EntityFramework;
 
 namespace TomodaTibiaAPI.Services
 {
@@ -46,7 +48,7 @@ namespace TomodaTibiaAPI.Services
 
             if (checkAuthor.Succeeded)
             {
-                var author = _mapper.Map<Author>(authorReq);
+                var author = _mapper.Map<EntityFramework.Author>(authorReq);
 
                 if (!IsEmailResgistered(author.Email))
                 {
@@ -148,7 +150,7 @@ namespace TomodaTibiaAPI.Services
                     if (auhorToUpdate != null)
                     {
 
-                        auhorToUpdate = _mapper.Map<Author>(newAuthor);
+                        auhorToUpdate = _mapper.Map<EntityFramework.Author>(newAuthor);
                         _db.Authors.Update(auhorToUpdate);
                         await _db.SaveChangesAsync();
 
@@ -208,6 +210,7 @@ namespace TomodaTibiaAPI.Services
                 .Where(a => a.Email == email)
                 .FirstOrDefault() == null ? false : true;
         }
-  
+
+
     }
 }

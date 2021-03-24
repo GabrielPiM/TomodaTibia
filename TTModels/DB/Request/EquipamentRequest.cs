@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
+#nullable disable
 
 namespace TomodaTibiaModels.DB.Request
 {
     public partial class EquipamentRequest
     {
         public int Id { get; set; }
+        public int? IdPlayer { get; set; }
         public string Amulet { get; set; }
         public string Bag { get; set; }
         public string Helmet { get; set; }
@@ -19,6 +20,6 @@ namespace TomodaTibiaModels.DB.Request
         public string Boots { get; set; }
         public string Ammo { get; set; }
 
- 
+       
     }
 }

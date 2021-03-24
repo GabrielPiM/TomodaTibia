@@ -1,4 +1,4 @@
-﻿using EFDataAcessLibrary.Models;
+﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,49 +13,49 @@ using TomodaTibiaModels.DB.Request;
 namespace TomodaTibiaAPI.Controllers
 {
 
-    [Route("authors")]
-    public class AuthorController : Controller
-    {
+    //[Route("authors")]
+    //public class AuthorController : Controller
+    //{
 
-        private AuthorDataService _dataService;
-        private readonly CurrentUserService _user;
+    //    private AuthorDataService _dataService;
+    //    private readonly CurrentUserService _user;
 
-        public AuthorController(AuthorDataService dataService, CurrentUserService user)
-        {
-            _dataService = dataService;
-            _user = user;
-        }
+    //    public AuthorController(AuthorDataService dataService, CurrentUserService user)
+    //    {
+    //        _dataService = dataService;
+    //        _user = user;
+    //    }
 
-        [HttpPost]
-        public async Task<ActionResult> AddAuthor([FromBody] AuthorRequest author)
-        {
-            var response = await _dataService.Add(author);
+    //    [HttpPost]
+    //    public async Task<ActionResult> AddAuthor([FromBody] AuthorRequest author)
+    //    {
+    //        var response = await _dataService.Add(author);
 
-            return StatusCode(response.StatusCode, response);
-        }
+    //        return StatusCode(response.StatusCode, response);
+    //    }
 
-        [Authorize]
-        [HttpDelete]
-        public async Task<ActionResult> RemoveAuthor([FromBody] AuthorRequest author)
-        {
-            author.Id = _user.IdAuthor(HttpContext);
+    //    [Authorize]
+    //    [HttpDelete]
+    //    public async Task<ActionResult> RemoveAuthor([FromBody] AuthorRequest author)
+    //    {
+    //        author.Id = _user.IdAuthor(HttpContext);
 
-            var response = await _dataService.Remove(author);
+    //        var response = await _dataService.Remove(author);
 
-            return StatusCode(response.StatusCode, response);
-        }
+    //        return StatusCode(response.StatusCode, response);
+    //    }
 
-        [Authorize]
-        [HttpPut]
-        public async Task<ActionResult> UpdateAuthor([FromBody] AuthorRequest author, [FromBody] string oldPassword)
-        {
-            author.Id = _user.IdAuthor(HttpContext);
+    //    [Authorize]
+    //    [HttpPut]
+    //    public async Task<ActionResult> UpdateAuthor([FromBody] AuthorRequest author, [FromBody] string oldPassword)
+    //    {
+    //        author.Id = _user.IdAuthor(HttpContext);
 
-            var response = await _dataService.Update(author, oldPassword);
+    //        var response = await _dataService.Update(author, oldPassword);
 
-            return StatusCode(response.StatusCode, response);
-        }
+    //        return StatusCode(response.StatusCode, response);
+    //    }
 
 
-    }
+    //}
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using TomodaTibiaModels.DB.Response;
 using Microsoft.EntityFrameworkCore;
 
-using EFDataAcessLibrary.Models;
+using TomodaTibiaAPI.EntityFramework;
 using TomodaTibiaModels.Character.Response;
-using TomodaTibiaModels.Hunt.Response;
+using TomodaTibiaModels.Hunt.Response.Search;
 using TomodaTibiaModels.DB.Request;
 using AutoMapper;
 using TomodaTibiaAPI.Utils;
@@ -19,12 +19,13 @@ using TomodaTibiaAPI.Utils.Pagination;
 
 using TomodaTibiaAPI.BLL;
 using TomodaTibiaModels.Utils;
+using TomodaTibiaModels.Utils.DBMaps;
 
 namespace TomodaTibiaAPI.Services
 {
     public interface IHuntDataService
     {
-        //Task<PaginatedList<ToDo>> GetList(int? pageNumber, string sortField, string sortOrder);
+
         Task<Response<SearchResponse>> Search(SearchParameterRequest parameters);
         Task<Response<HuntResponse>> HuntDetail(int idHunt);
         Task<Response<HuntRequest>> HuntToUpdate(int idHunt, int idAuthor);
@@ -91,34 +92,48 @@ namespace TomodaTibiaAPI.Services
                             .Distinct()
                             .ToListAsync();
 
+                        List<int> IdValidMonsters = new List<int>();
+
+                        //loot filter
+                        if (parameters.IdLoot != 0)
+                        {
+                            IdValidMonsters = await _db.Monsters.Where(m => m.MonsterLoots
+                            .All(mp => mp.IdItem == parameters.IdLoot))
+                            .Select(ms => ms.Id).ToListAsync();
+
+                        }
+
+
                         //Filtra as hunts com base nos parametros fornecidos.
                         var hunts = await _db.Hunts
                             .Where(h =>
                             huntsValidas.Contains(h.Id)
-                            && (parameters.QtyPlayer.Contains(h.QtyPlayer))
+                            && parameters.QtyPlayer.First() == 0 || parameters.QtyPlayer.Contains(h.TeamSize)
                             && parameters.IdClientVersion.Contains(h.HuntClientVersions.First().IdClientVersion)
-                            && h.IsValid == true
+                            && h.IdSituation == HuntSituationMap.Accepted
                             && h.IsPremium == parameters.IsPremium
                             && h.XpHr >= parameters.XpHr
                             && h.Rating >= parameters.Rating
                             && parameters.IdAuthor == 0 || h.IdAuthor == parameters.IdAuthor
                             && (h.LevelMinReq > parameters.Level.First() && h.LevelMinReq <= parameters.Level.Last())
                             && (h.Difficulty >= parameters.Difficulty.First() && h.Difficulty <= parameters.Difficulty.Last())
-                            && parameters.IdLoot == 0 || h.HuntLoots.First().IdItem == parameters.IdLoot)
+                            && (parameters.IdLoot == 0 || h.HuntMonsters.All(m => IdValidMonsters.Contains(m.Id))))
                             .Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize)
-                            .Select(h => new HuntCardResponse
-                            {
-                                Id = h.Id,
-                                Nome = h.Name,
-                                LevelMinReq = h.LevelMinReq,
-                                Monsters = _db.HuntMonsters
-                                    .Where(m => m.IdHunt == h.Id)
-                                    .Select(m => m.IdMonsterNavigation.Img).ToList()
+                           .Select(h => new HuntCardResponse
+                           {
+                               Id = h.Id,
+                               Nome = h.Name,
+                               LevelMinReq = h.LevelMinReq,
+                               Monsters = _db.HuntMonsters
+                                   .Where(m => m.IdHunt == h.Id)
+                                   .Select(m => m.IdMonsterNavigation.Img).ToList()
+                           }).ToListAsync();
 
-                            }).ToListAsync();
+
+
 
                         string mens = string.Format("{0}",
-                            hunts.Count == 0 ? "No hunt matched your query, change your query parameters." : ""); ;
+                            hunts.Count == 0 ? "No hunt matched your query, change your query parameters." : "");
 
                         if (hunts.Count != 0)
                         {
@@ -133,6 +148,7 @@ namespace TomodaTibiaAPI.Services
                     }
                     catch
                     {
+
                         Errors.Add("Error searching for hunts.");
                         response.Failed(Errors, StatusCodes.Status500InternalServerError);
                     }
@@ -160,92 +176,81 @@ namespace TomodaTibiaAPI.Services
             {
 
                 var hunt = _mapper.Map<HuntResponse>(await _db.Hunts
-                    .Where(h => h.Id == idHunt && h.IsValid == true).FirstOrDefaultAsync());
+                    .Where(h => h.Id == idHunt && h.IdSituation == HuntSituationMap.Accepted).FirstOrDefaultAsync());
 
                 if (hunt != null)
                 {
                     hunt.Players = await _db.Players
                         .Where(h => h.IdHunt == idHunt)
-                        .Include(e => e.Equipaments)
+                        .Include(pe => pe.Equipaments)
                         .Select(p => new PlayerResponse()
                         {
-                            Vocation = _db.Vocations.Where(v => v.Id == p.Vocation).Select(v => v.Name).First(),
+                            Vocation = _db.Vocations.Where(wv => wv.Id == p.Vocation).Select(sv => sv.Name).FirstOrDefault(),
+
+                            Function = p.Function,
+
                             Level = p.Level,
-                            Equipaments = _mapper.Map<EquipamentResponse>(p.Equipaments.First())
+
+                            Equipments = _mapper.Map<EquipamentResponse>(p.Equipaments.FirstOrDefault()),
+
+                            Items = _db.PlayerItems.Where(wpi => wpi.IdPlayer == p.Id).Select(spi => new ImgObjResponse()
+                            {
+                                Img = spi.IdItemNavigation.Img
+
+                            }).ToList(),
+
+                            Imbuements = _db.PlayerImbuements.Where(wpi => wpi.Id == p.Id).Select(spi => new ImbuementResponse()
+                            {
+                                Category = spi.IdImbuementNavigation.Category,
+
+                                Img = spi.IdImbuementNavigation.Img,
+
+                                Desc = _db.ImbuementValues.Where(wiv => wiv.IdImbuementType == spi.IdImbuementType
+                                        && wiv.IdImbuementLevel == spi.IdImbuementLevel).Select(siv => siv.Value)
+                                        + spi.IdImbuementNavigation.Desc,
+
+                                Level = spi.IdImbuementLevelNavigation.Name,
+
+                                Qty = spi.Qty,
+
+                                Items = _db.ImbuementItems.Where(wii => wii.Id == spi.Id).Select(sii => new ImbuementItemResponse()
+                                {
+                                    Img = sii.IdItemNavigation.Img,
+                                    Qty = sii.Qty
+
+                                }).ToList(),
+
+                            }).ToList(),
+
+                            Preys = _db.PlayerPreys.Where(wpp => wpp.IdPlayer == p.Id).Select(spp => new PreyResponse()
+                            {
+                                TypeImg = spp.IdPreyNavigation.Img,
+                                MonsterImg = spp.IdMonsterNavigation.Img,
+                                Stars = spp.ReccStar
+
+                            }).ToList()
+
                         })
                         .ToListAsync();
 
 
-                    hunt.OtherItems = await _db.HuntItems
-                        .Where(i => i.IdHunt == idHunt)
-                        .Select(i => new ItemResponse
-                        {
-                            Img = i.IdItemNavigation.Img,
-                            Qty = i.Qty
-
-                        }).ToListAsync();
-
-                    //Preys desta hunt.
-                    hunt.Preys = await _db.HuntPreys
-                        .Where(h => h.IdHunt == idHunt)
-                        .Select(p => new PreyResponse
-                        {
-                            Img = p.IdMonsterNavigation.Img,
-                            ReccStars = p.ReccStar,
-                            Monster = new MonsterResponse
-                            {
-                                Img = p.IdMonsterNavigation.Img
-                            }
-                        }).ToListAsync();
-
-                    //Imbuements desta hunt.
-                    hunt.Imbuements = await _db.HuntImbuements.Where(hi => hi.IdHunt == idHunt)
-                        .Select(h => new ImbuementResponse
-                        {
-                            Category = h.IdImbuementNavigation.Category,
-
-                            Value = _db.ImbuementDescs
-                            .Where(desc => desc.IdImbuementLevel == h.IdImbuementLevel
-                                && desc.IdImbuementType == h.IdImbuementType)
-                            .Select(desc2 => desc2.Value)
-                            .First(),
-
-                            Desc = h.IdImbuementNavigation.Desc,
-                            Level = h.IdImbuementLevelNavigation.Name,
-                            Qty = h.Qty,
-                            Img = h.IdImbuementNavigation.Img,
-
-                            Items = _db.ImbuementItems
-                            .Where(i => i.IdImbuement == h.IdImbuementNavigation.Id
-                              && i.IdImbuementLevel <= h.IdImbuementLevel)
-                            .Select(it => new ItemResponse
-                            {
-                                Img = it.IdItemNavigation.Img,
-                                Qty = it.Qty
-                            }).ToList()
-
-                        }).ToListAsync();
-
                     //Versões do client dessa hunt
-                    hunt.Versions = await _db.HuntClientVersions
+                    hunt.HuntClientVersions = await _db.HuntClientVersions
                         .Where(h => h.IdHunt == idHunt)
                         .Select(v => v.IdClientVersionNavigation.VersionName)
                         .ToListAsync();
 
                     hunt.HuntMonsters = await _db.HuntMonsters
                         .Where(m => m.IdHunt == idHunt)
-                        .Select(mo => new MonsterResponse()
+                        .Select(mo => new HuntMonsterResponse()
                         {
-                            Img = mo.IdMonsterNavigation.Img
+                            Img = mo.IdMonsterNavigation.Img,
+                            Qty = mo.Qty
+
                         })
                         .ToListAsync();
 
-                    hunt.Loot = await _db.HuntLoots
-                        .Where(l => l.IdHunt == idHunt)
-                        .Select(loot => new LootResponse()
-                        {
-                            Img = loot.IdItemNavigation.Img
-                        }).ToListAsync();
+
 
                     response.Sucess("Search completed successfully.", hunt);
                 }
@@ -268,20 +273,26 @@ namespace TomodaTibiaAPI.Services
         public async Task<Response<string>> Add(HuntRequest huntReq, int idAuthor)
         {
             var response = new Response<string>(string.Empty);
+
+            huntReq.LevelMinReq = huntReq.Players.ToArray().Select(player => player.Level).Min();
+            huntReq.TeamSize = huntReq.Players.Count();
+
             var checkHunt = _bll.CheckHuntReq(huntReq);
 
             if (checkHunt.Succeeded)
             {
                 try
                 {
-                    var huntQueueLimit = _db.Hunts.Where(h => h.IsValid == false && h.IdAuthor == idAuthor).Count();
+                    var huntQueueLimit = _db.Hunts.Where(h => h.IdSituation == HuntSituationMap.Waiting
+                    && h.IdAuthor == idAuthor).Count();
 
                     if (huntQueueLimit < 25)
                     {
                         var newHunt = _mapper.Map<Hunt>(huntReq);
-                        newHunt.IdAuthor = idAuthor;
 
-                        newHunt.IsValid = false;
+                        newHunt.IdAuthor = idAuthor;
+                        newHunt.IdSituation = HuntSituationMap.Waiting;
+
                         _db.Hunts.Add(newHunt);
                         await _db.SaveChangesAsync();
 
@@ -294,10 +305,12 @@ namespace TomodaTibiaAPI.Services
                     }
 
                 }
-                catch
+                catch(Exception ex)
                 {
+                   
                     Errors.Add("Error when saving hunt.");
                     response.Failed(Errors, StatusCodes.Status500InternalServerError);
+                    response.SetException(ex);
                 }
             }
             else
@@ -316,7 +329,7 @@ namespace TomodaTibiaAPI.Services
 
             if (checkHunt.Succeeded)
             {
-                var updatedHunt = _mapper.Map<Hunt>(huntReq);
+                var updatedHunt = _mapper.Map<HuntRequest>(huntReq);
                 updatedHunt.IdAuthor = idAuthor;
 
                 try
@@ -324,15 +337,14 @@ namespace TomodaTibiaAPI.Services
                     var huntInDb = await _db.Hunts
                         .SingleOrDefaultAsync(h =>
                         h.Id == updatedHunt.Id
-                        && h.IdAuthor == updatedHunt.IdAuthor
-                        && h.IsValid == true);
+                        && h.IdAuthor == updatedHunt.IdAuthor);
 
                     if (huntInDb != null)
                     {
-                        updatedHunt.IsValid = false;
+                        updatedHunt.IdSituation = HuntSituationMap.Waiting;
 
                         _db.Hunts.Remove(huntInDb);
-                        _db.Hunts.Add(CleanHuntKeysToUpdate(updatedHunt));
+                        _db.Hunts.Add(_mapper.Map<Hunt>(CleanHuntKeysToUpdate(updatedHunt)));
                         _db.SaveChanges();
 
                         response.Sucess("The hunt was updated.", updatedHunt.Id.ToString());
@@ -362,16 +374,17 @@ namespace TomodaTibiaAPI.Services
         {
             var response = new Response<string>(string.Empty);
 
-            var huntToRemove = await _db.Hunts.SingleOrDefaultAsync(h => h.Id == idHunt && h.IdAuthor == idAuthor && h.IsValid == true);
+            var huntToRemove = await _db.Hunts.SingleOrDefaultAsync(h => h.Id == idHunt
+            && h.IdAuthor == idAuthor
+            && h.IdSituation != HuntSituationMap.Deleted);
 
             if (huntToRemove != null)
             {
                 try
                 {
                     //Removido logicamente.
-                    huntToRemove.IsValid = false;
-                    huntToRemove.DescHunt += huntToRemove.Name;
-                    huntToRemove.Name = "(REMOVED):" + huntToRemove.Name.Length;
+                    huntToRemove.IdSituation = HuntSituationMap.Deleted;
+                    huntToRemove.IdAuthor = DefaultAuthorMap.id;
                     _db.SaveChanges();
 
                     response.Sucess("The hunt was removed.", string.Empty);
@@ -398,21 +411,22 @@ namespace TomodaTibiaAPI.Services
 
             try
             {
-                var partialHunt = await _db.Hunts.FirstOrDefaultAsync(h =>
-                h.Id == idHunt
+                var partialHunt = await _db.Hunts.FirstOrDefaultAsync(h => h.Id == idHunt
                 && h.IdAuthor == idAuthor);
+
 
                 if (partialHunt != null)
                 {
                     var hunt = await _db.Hunts.Where(h => h.Id == idHunt && h.IdAuthor == idAuthor)
                         .Include(h => h.HuntClientVersions)
-                        .Include(h => h.HuntImbuements)
-                        .Include(h => h.HuntItems)
                         .Include(h => h.HuntMonsters)
-                        .Include(h => h.HuntPreys)
-                        .Include(h => h.HuntLoots)
-                        .Include(h => h.Players)
-                        .ThenInclude(h => h.Equipaments)
+                        .Include(h => h.HuntDescs)
+                        .Include(h => h.Players).ThenInclude(h => h.Equipaments)
+                        .Include(h => h.Players).ThenInclude(h => h.PlayerImbuements)
+                        .Include(h => h.Players).ThenInclude(h => h.PlayerPreys)
+                        .Include(h => h.Players).ThenInclude(h => h.PlayerItems)
+
+
                         .FirstAsync();
 
                     response.Sucess("Hunt Found.", _mapper.Map<HuntRequest>(hunt));
@@ -507,7 +521,7 @@ namespace TomodaTibiaAPI.Services
         }
 
         //Limpa campos de primary keys para inserir nova entidade.
-        private Hunt CleanHuntKeysToUpdate(Hunt hunt)
+        private HuntRequest CleanHuntKeysToUpdate(HuntRequest hunt)
         {
             hunt.Id = 0;
 
@@ -516,35 +530,42 @@ namespace TomodaTibiaAPI.Services
                 verions.Id = 0;
             }
 
+            foreach (var desc in hunt.HuntDescs)
+            {
+                desc.Id = 0;
+            }
+
+            foreach (var spcreq in hunt.HuntSpecialReqs)
+            {
+                spcreq.Id = 0;
+            }
+
             foreach (var player in hunt.Players)
             {
                 player.Id = 0;
+
                 player.Equipaments.First().Id = 0;
-            }
 
-            foreach (var imbue in hunt.HuntImbuements)
-            {
-                imbue.Id = 0;
-            }
+                foreach (var imbue in player.PlayerImbuements)
+                {
+                    imbue.Id = 0;
+                }
 
-            foreach (var item in hunt.HuntItems)
-            {
-                item.Id = 0;
+                foreach (var prey in player.PlayerPreys)
+                {
+                    prey.Id = 0;
+                }
+
+                foreach (var item in player.PlayerItems)
+                {
+                    item.Id = 0;
+                }
+
             }
 
             foreach (var monster in hunt.HuntMonsters)
             {
                 monster.Id = 0;
-            }
-
-            foreach (var prey in hunt.HuntPreys)
-            {
-                prey.Id = 0;
-            }
-
-            foreach (var loot in hunt.HuntLoots)
-            {
-                loot.Id = 0;
             }
 
             return hunt;

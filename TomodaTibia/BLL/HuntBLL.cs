@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using TomodaTibiaAPI.Utils.Pagination;
 using TomodaTibiaModels.DB.Request;
 using Microsoft.Extensions.Configuration;
+using TomodaTibiaModels.Utils.DBMaps;
 
 namespace TomodaTibiaAPI.BLL
 {
@@ -137,37 +138,72 @@ namespace TomodaTibiaAPI.BLL
                 if (huntReq.XpHr < 0)
                     _baseBll.SetError("xphr");
 
-                if (huntReq.QtyPlayer < 1)
-                    _baseBll.SetError("qtyplayer");
+                if (huntReq.TeamSize < 1)
+                    _baseBll.SetError("teamSize");
 
-                CheckTutorialURL(huntReq.VideoTutorialUrl);
+                CheckTutorialURL(huntReq.TutorialVideoUrl);
 
                 //Descrição checar pessoalmente.
 
                 if (huntReq.Difficulty < 0)
                     _baseBll.SetError("difficulty");
 
-                if (huntReq.Rating < 0)
-                    _baseBll.SetError("rating");
-
-                if (huntReq.HuntImbuements.Count > 11)
-                    _baseBll.SetError("imbuement");
-                else
+                //CheckPlayer
+                foreach (var player in huntReq.Players)
                 {
-                    int sumTotalImbuements = huntReq.HuntImbuements.ToArray().Select(x => x.Qty).ToArray().Sum();
-                    if (sumTotalImbuements > 11)
-                        _baseBll.SetError("imbuement");
+                    //Level
+                    if (player.Level < 0)
+                        _baseBll.SetErrorWithExtraMsg("level", $"-->({player.Function})");
+
+                    //Function
+                    if (player.Function.Length > 100)
+                        _baseBll.SetErrorWithExtraMsg("function", $"-->({player.Function})");
+
+                    //Imbuement
+                    if (player.PlayerImbuements.Count > 11)
+                    {
+                        _baseBll.SetErrorWithExtraMsg("imbuementCount", $"-->({player.Function})");
+                    }
+
+                    else
+                    {
+                        foreach (var playerImbue in player.PlayerImbuements)
+                        {
+
+                            if (playerImbue.Qty > 11)
+                                _baseBll.SetErrorWithExtraMsg("imbuementQty", $"-->({player.Function})" +
+                                    $"-->on {ImbuementMap.GetImbuement(playerImbue.IdImbuement)} imbuement.");
+                        }
+                    }
+
+                    //Prey
+                    if (player.PlayerPreys.Count > 3)
+                    {
+                        _baseBll.SetErrorWithExtraMsg("prey", $"-->({player.Function}");
+
+                    }
+
+                    //Item
+                    if (player.PlayerItems.Count > 36)
+                    {
+                        _baseBll.SetErrorWithExtraMsg("item", $"-->({player.Function}");
+                    }
                 }
 
-                if (huntReq.HuntPreys.Count > 3)
-                    _baseBll.SetError("prey");
+                //CheckDesc
+                foreach (var desc in huntReq.HuntDescs)
+                {
 
-                if (huntReq.HuntItems.Count > 36)
-                    _baseBll.SetError("item");
+                    if (desc.Title.Length > 100)
+                    {
+                        _baseBll.SetErrorWithExtraMsg("descTitle", $"-->({desc.Title})");
+                    }
 
-                if (huntReq.DescHunt.Length > 2048)
-                    _baseBll.SetError("desc");
-
+                    if (desc.Paragraph.Length > 2048)
+                    {
+                        _baseBll.SetErrorWithExtraMsg("descParagraph", $"-->Paragraph Title:{desc.Title}");
+                    }
+                }
             }
 
             if (_baseBll.FoundErrors())
@@ -215,17 +251,20 @@ namespace TomodaTibiaAPI.BLL
             _baseBll.AddDicItem("levelminreq", "Level must be > 0.");
             _baseBll.AddDicItem("vocation", "Vocation ID must be i range(1,4). ");
             _baseBll.AddDicItem("idclientversion", "Invalid client version ID.");
-            _baseBll.AddDicItem("qtyplayer", "QtyPlayer must be > 0.");
+            _baseBll.AddDicItem("teamSize", "TeamSize must be > 0.");
             _baseBll.AddDicItem("xphr", "XpHr must be >= 0.");
-            _baseBll.AddDicItem("rating", "Rating must be in range(0,5).");
             _baseBll.AddDicItem("idloot", "Loot ID must be >= 0, (0 means no Loot).");
             _baseBll.AddDicItem("videotutorialurl", "Invalid tutorial video link. Accepted hosts: " +
                string.Join(", ", _validHosts.ToArray()) + ", (https:// is required).");
             _baseBll.AddDicItem("pagesize", "Page size must be > 0.");
-            _baseBll.AddDicItem("imbuement", "Too many imbuements, max is 11.");
+            _baseBll.AddDicItem("imbuementCount", "Too many imbuements, max is 11.");
+            _baseBll.AddDicItem("imbuementQty", "Imbuement qty Sum Exceded max, max is 11.");
+            _baseBll.AddDicItem("level", "min level is 1.");
+            _baseBll.AddDicItem("function", "function name is to large. max is 100 characters.");
             _baseBll.AddDicItem("prey", "Too many preys, max is 3.");
             _baseBll.AddDicItem("item", "Too many items, max is 36.");
-            _baseBll.AddDicItem("desc", "Description is to large, max 2048 characters.");
+            _baseBll.AddDicItem("descParagraph", "Description is to large, max 2048 characters.");
+            _baseBll.AddDicItem("descTitle", "Title is to large, max 100 characters.");
         }
     }
 }

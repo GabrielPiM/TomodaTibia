@@ -1,4 +1,4 @@
-﻿using EFDataAcessLibrary.Models;
+﻿
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TomodaTibiaModels.DB.Request;
+using TomodaTibiaModels.Account.Request;
 using TomodaTibiaModels.Utils;
+
 
 namespace TomodaTibiaAPI.BLL
 {
@@ -74,7 +75,7 @@ namespace TomodaTibiaAPI.BLL
             {
                 _baseBll.SetError("email");
             }
-           
+
         }
 
     }

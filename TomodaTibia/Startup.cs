@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using TomodaTibiaAPI;
 using TomodaTibiaAPI.Services;
 using Swashbuckle.AspNetCore.Swagger;
-using EFDataAcessLibrary.Models;
+using TomodaTibiaAPI.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using AutoMapper;
@@ -85,6 +85,7 @@ namespace TomodaTibia
             services.AddScoped<HuntDataService>();
             services.AddScoped<AuthorDataService>();
             services.AddScoped<AuthenticationDataService>();
+            services.AddScoped<PredictSearchDataService>();
             services.AddScoped<CurrentUserService>();
             #endregion
 

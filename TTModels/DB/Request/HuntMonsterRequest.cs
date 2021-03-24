@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
- 
+#nullable disable
 
 namespace TomodaTibiaModels.DB.Request
 {
@@ -9,5 +9,7 @@ namespace TomodaTibiaModels.DB.Request
     {
         public int Id { get; set; }
         public int IdMonster { get; set; }
+        public int? Qty { get; set; }
+
     }
 }

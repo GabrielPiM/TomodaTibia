@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using TomodaTibiaAPI.Utils;
-using TomodaTibiaModels.Hunt.Response;
+using TomodaTibiaModels.Hunt.Response.Search;
 using TomodaTibiaModels.Utils;
 
 namespace TomodaTibiaAPI.Services

@@ -29,8 +29,8 @@ namespace TomodaTibiaAPI.Utils.Pagination
         public int IdLoot { get; set; }
         public void ConfiureDefaults()
         {
-            // 0 é o minimo requerido para pesquisar
-            // 3 é o id do client global
+            // 0 é o valor de filtragem minimo requerido para pesquisar
+            // 3 é o id do client global (default)
             Level.Add(0);
             QtyPlayer.Add(0);
             Difficulty.Add(0);  

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
+#nullable disable
 
 namespace TomodaTibiaModels.DB.Response
 {
-    public partial class EquipamentResponse
+    public  class EquipamentResponse
     {
+     
         public string Amulet { get; set; }
         public string Bag { get; set; }
         public string Helmet { get; set; }
@@ -17,6 +18,7 @@ namespace TomodaTibiaModels.DB.Response
         public string Legs { get; set; }
         public string Boots { get; set; }
         public string Ammo { get; set; }
+
  
     }
 }

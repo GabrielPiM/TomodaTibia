@@ -10,11 +10,11 @@ using System.Net.Http;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
-using EFDataAcessLibrary.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using TomodaTibiaModels.DB.Request;
-using TomodaTibiaModels.Hunt.Response;
+using TomodaTibiaModels.Hunt.Response.Search;
 using TomodaTibiaModels.DB.Response;
 using TomodaTibiaAPI.BLL;
 using TomodaTibiaAPI.Utils.Pagination;
@@ -43,7 +43,7 @@ namespace TomodaTibiaAPI.Controllers
         public async Task<ActionResult> Search([FromBody] SearchParameterRequest parameters)
         {
             var response = new Response<SearchResponse>();
-           
+
             //Nova consulta de hunts.
             response = await _dataService.Search(parameters);
 

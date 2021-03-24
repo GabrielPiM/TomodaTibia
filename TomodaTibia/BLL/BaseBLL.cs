@@ -67,6 +67,11 @@ namespace TomodaTibiaAPI.BLL
             _errors.Add(_errorsDic[key]);
         }
 
+        public void SetErrorWithExtraMsg(string key,string msg)
+        {
+            _errors.Add(_errorsDic[key] + msg);
+        }
+
         public void AddDicItem(string key, string mens)
         {
             _errorsDic.Add(key, mens);
