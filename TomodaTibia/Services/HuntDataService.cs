@@ -52,7 +52,7 @@ namespace TomodaTibiaAPI.Services
             Errors = new List<string>();
         }
 
-        //Consulta as hunts ideias para o player.
+        //Consulta as hunts ideais para o player.
         public async Task<Response<SearchResponse>> Search(SearchParameterRequest parameters)
         {
             var response = new Response<SearchResponse>(new SearchResponse());
@@ -76,7 +76,7 @@ namespace TomodaTibiaAPI.Services
                             .Select(v => v.Id)
                             .FirstAsync();
 
-                        //Copia os valores do character para filtragem
+                        //Copia os valores do character para filtragem das hunts / pesquisas por nome são obrigatoriamente do servidor global.
                         parameters.ConfiureDefaults();
                         parameters.Vocation.Add(idVocation);
                         parameters.Level.Add(response.Data.Character.level);
@@ -94,13 +94,12 @@ namespace TomodaTibiaAPI.Services
 
                         List<int> IdValidMonsters = new List<int>();
 
-                        //loot filter
+                        //através do loot desejado filtra os monstros que o(s) possuem
                         if (parameters.IdLoot != 0)
                         {
                             IdValidMonsters = await _db.Monsters.Where(m => m.MonsterLoots
                             .All(mp => mp.IdItem == parameters.IdLoot))
                             .Select(ms => ms.Id).ToListAsync();
-
                         }
 
 
@@ -131,7 +130,7 @@ namespace TomodaTibiaAPI.Services
 
 
 
-
+                        // mensagem caso nao encontre nenhuma hunt.
                         string mens = string.Format("{0}",
                             hunts.Count == 0 ? "No hunt matched your query, change your query parameters." : "");
 
@@ -161,6 +160,7 @@ namespace TomodaTibiaAPI.Services
             }
             else
             {
+                //parametros nao passaram na BLL.
                 response.Failed(checkParameters.Errors, checkParameters.StatusCode);
             }
 
